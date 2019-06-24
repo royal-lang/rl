@@ -12,7 +12,6 @@ It will intiailly use a C compiler as the backend but will be abstract enough to
 ### Hello World!
 
 ```
-// Runtime
 fn main()
 {
   writeln("Hello World!");
