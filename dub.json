@@ -1,0 +1,5 @@
+{
+  "name": "bl",
+  "targetType": "executable",
+	"sourcePaths": ["source"]
+}
