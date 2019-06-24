@@ -1,2 +1,1 @@
-*.bl linguist-language=D
-website/* linguist-vendored
+*.bl diff=D linguist-language=D
