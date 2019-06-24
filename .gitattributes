@@ -1,2 +1,2 @@
-*.v linguist-language=D
+*.bl linguist-language=D
 website/* linguist-vendored
