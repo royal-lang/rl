@@ -14,6 +14,8 @@ It will intiailly use a C compiler as the backend but will be abstract enough to
 ```
 fn main()
 {
+  import std.stdio;
+  
   writeln("Hello World!");
 }
 ```
