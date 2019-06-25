@@ -3,7 +3,9 @@ The primary frontend compiler for bausslang.
 
 ---
 
-Bausslang is a static typed programming language as a simple learning project on developing a C-like programming language inspired by D, C#, Rust, Go, C and C++.
+Bausslang is a static typed programming language created as a simple learning project. The goal is to create a C-like programming language inspired by D, C#, Rust, Go, C and C++.
+
+Eventually the goal is to write the compiler in itself.
 
 It will intiailly use a C compiler as the backend but will be abstract enough to have that changed in the future.
 
@@ -14,7 +16,7 @@ It will intiailly use a C compiler as the backend but will be abstract enough to
 ```
 fn main()
 {
-  import std.stdio;
+  import std.stdio : writeln;
   
   writeln("Hello World!");
 }
