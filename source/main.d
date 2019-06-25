@@ -7,7 +7,7 @@
 */
 module main;
 
-import std.stdio : writeln, readln;
+import std.stdio : writeln, writefln, readln;
 
 import configuration;
 import core;
@@ -63,6 +63,7 @@ void handle(string sourceDirectory)
 
         auto rootToken = groupTokens(tokens);
 
+
         // Parse tokens into semantic data
 
         writeln();
@@ -70,6 +71,9 @@ void handle(string sourceDirectory)
         writeln();
 
         auto moduleObject = parseModule(rootToken, file);
+
+        import std.file : write;
+        write("parsertrees/parsertree_" ~ moduleObject.name ~ ".json", rootToken.toJson(0));
 
         writeln();
         writeln();
@@ -82,6 +86,41 @@ void handle(string sourceDirectory)
           foreach (imp; moduleObject.imports)
           {
             writeln("Import: ", imp.modulePath);
+            writeln("Members: ", imp.members);
+          }
+        }
+
+        if (moduleObject.includes)
+        {
+          foreach (inc; moduleObject.includes)
+          {
+            writeln("Include: ", inc.headerPath);
+          }
+        }
+
+        if (moduleObject.internalFunctions)
+        {
+          foreach (fn; moduleObject.internalFunctions)
+          {
+            writeln("Internal Function: ", fn.name);
+            writeln("Definition: ", fn.definitionArguments);
+            writeln("Template Args:");
+
+            foreach (arg; fn.templateParameters)
+            {
+              writeln("Type: ", arg.type);
+              writeln("Name: ", arg.name);
+            }
+
+            writeln("Parameters:");
+
+            foreach (arg; fn.parameters)
+            {
+              writeln("Type: ", arg.type);
+              writeln("Name: ", arg.name);
+            }
+
+            writeln("---");
           }
         }
 
@@ -91,8 +130,21 @@ void handle(string sourceDirectory)
           {
             writeln("Function: ", fn.name);
             writeln("Definition: ", fn.definitionArguments);
-            writeln("Template Args: ", fn.templateParameters);
-            writeln("Parameters: ", fn.parameters);
+            writeln("Template Args:");
+
+            foreach (arg; fn.templateParameters)
+            {
+              writeln("Type: ", arg.type);
+              writeln("Name: ", arg.name);
+            }
+
+            writeln("Parameters:");
+
+            foreach (arg; fn.parameters)
+            {
+              writeln("Type: ", arg.type);
+              writeln("Name: ", arg.name);
+            }
 
             if (fn.scopes)
             {
@@ -100,7 +152,32 @@ void handle(string sourceDirectory)
 
               foreach (s; fn.scopes)
               {
-                writeln(s.temp);
+                if (s.assignmentExpression)
+                {
+                  if (s.assignmentExpression.rightHandCall)
+                  {
+                    writefln("%s %s %s(%s)", s.assignmentExpression.leftHand, s.assignmentExpression.operator, s.assignmentExpression.rightHandCall.identifier, s.assignmentExpression.rightHandCall.parameters);
+                  }
+                  else
+                  {
+                    writefln("%s %s %s", s.assignmentExpression.leftHand, s.assignmentExpression.operator, s.assignmentExpression.rightHand);
+                  }
+                }
+                else if (s.functionCallExpression)
+                {
+                  writefln("%s(%s)", s.functionCallExpression.identifier, s.functionCallExpression.parameters);
+                }
+                else if (s.returnExpression)
+                {
+                  if (s.returnExpression.returnCall)
+                  {
+                    writefln("Return: %s(%s)", s.returnExpression.returnCall.identifier, s.returnExpression.returnCall.parameters);
+                  }
+                  else
+                  {
+                    writeln("Return: ", s.returnExpression.arguments);
+                  }
+                }
               }
             }
 
@@ -118,11 +195,31 @@ void handle(string sourceDirectory)
 
       // CTFE etc.
 
+      if (hasErrors)
+      {
+        return;
+      }
+
       // Semantic analysis
+
+      if (hasErrors)
+      {
+        return;
+      }
 
       // Parse code to external soruce (ex. C)
 
+      if (hasErrors)
+      {
+        return;
+      }
+
       // Compile code (ex. generated C code)
+
+      if (hasErrors)
+      {
+        return;
+      }
     }
 
     if (directories && directories.length)

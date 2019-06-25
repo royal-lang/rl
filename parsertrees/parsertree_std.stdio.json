@@ -1,0 +1,22 @@
+{
+  "statement": [],
+  "tokens": [{
+    "statement": ["module", "std.stdio", ";"],
+    "tokens": []
+  },{
+    "statement": ["import", "c.stdio", ";"],
+    "tokens": []
+  },{
+    "statement": ["fn", "writeln", "(", "string", "message", ")"],
+    "tokens": [{
+        "statement": ["{"],
+        "tokens": []
+    },{
+        "statement": ["printf", "(", "message", ")", ";"],
+        "tokens": []
+    },{
+        "statement": ["}"],
+        "tokens": []
+    }]
+  }]
+}

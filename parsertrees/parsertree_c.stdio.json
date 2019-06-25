@@ -1,0 +1,13 @@
+{
+  "statement": [],
+  "tokens": [{
+    "statement": ["module", "c.stdio", ";"],
+    "tokens": []
+  },{
+    "statement": ["include", "\"stdio.h\"", ";"],
+    "tokens": []
+  },{
+    "statement": ["fn", "printf", "(", "string", "message", ")", ";"],
+    "tokens": []
+  }]
+}

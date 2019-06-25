@@ -181,12 +181,26 @@ STRING[] tokenize(string content, bool includeComments)
       }
       else if (isSymbol(c))
       {
-        if (token && token.strip.length) tokens ~= token;
+        if (isSymbol(next) && c != '(' && c != '{' && c != ')' && c != '}' && next != '(' && next != '{' && next != ')' && next != '}')
+        {
+          if (token && token.strip.length) tokens ~= token;
 
-        token = to!string(c);
+          token = to!string(c) ~ to!string(next);
 
-        tokens ~= token;
-        token = "";
+          tokens ~= token;
+          token = "";
+
+          i++;
+        }
+        else
+        {
+          if (token && token.strip.length) tokens ~= token;
+
+          token = to!string(c);
+
+          tokens ~= token;
+          token = "";
+        }
       }
       else if (c.isWhite)
       {
@@ -219,7 +233,7 @@ bool isSymbol(char c)
 {
   switch (c)
   {
-    case '.':
+    //case '.': -- Stripped because it makes it easier to provide identifiers etc.
     case ',':
     case '(':
     case ')':
@@ -245,8 +259,7 @@ bool isSymbol(char c)
     case '@':
       return true;
 
-    default:
-      return false;
+    default: return false;
   }
 }
 
@@ -285,9 +298,33 @@ Token groupTokens(STRING[] tokens)
   auto currentToken = new Token(rootToken);
   currentToken.parent.tokens ~= currentToken;
 
+  bool inString = false;
+
+  STRING combine;
+  combine.s = "";
+
   foreach (token; tokens)
   {
-    if (token == ";")
+    if (token != "\"" && inString)
+    {
+      combine ~= token;
+    }
+    else if (token == "\"" && inString)
+    {
+      inString = false;
+
+      combine ~= token;
+
+      currentToken.statement ~= combine;
+      combine.s = "";
+    }
+    else if (token == "\"" && !inString)
+    {
+      inString = true;
+
+      combine ~= token;
+    }
+    else if (token == ";")
     {
       currentToken.statement ~= token;
 
@@ -319,4 +356,52 @@ Token groupTokens(STRING[] tokens)
   }
 
   return rootToken;
+}
+
+/**
+* Quick and dirty way to convert a token to json.
+* A simple debug function that will eventaully be stripped from the compiler etc.
+* Params:
+*   token = The token to convert to json.
+*   indent = The amount of indentation to provide.
+* Returns:
+*   A string equivalent to the json generated.
+*/
+string toJson(Token token, size_t indent)
+{
+  if ((!token.tokens || !token.tokens.length) && (!token.statement || !token.statement.length))
+  {
+    return null;
+  }
+
+  string json = `%s{
+%s%s"statement": %s,
+%s%s"tokens": [%s]
+%s}`;
+
+  import std.algorithm : map,filter;
+  import std.array : array, join;
+  import std.string : format,strip;
+
+  string indents = "";
+  string memberIndents = "";
+
+  foreach (_; 0 .. indent)
+  {
+    indents ~= "  ";
+    memberIndents ~= "  ";
+  }
+
+  if (indent == 0)
+  {
+    memberIndents = "  ";
+  }
+
+  return json.format
+  (
+    "",
+    memberIndents, indents, token.statement ? token.statement : [],
+    memberIndents, indents, (token.tokens ? (token.tokens.map!(t => toJson(t, indent + 1)).filter!(e => e && e.length).array.join(",").strip) : ""),
+    indents
+  );
 }

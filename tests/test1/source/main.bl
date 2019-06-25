@@ -3,26 +3,17 @@
 */
 module main;
 
-import c.stdio;
-import std.stdio;
+import std.stdio : writeln;
 
 // main function.
-fn int main(string[] args) {
-  writeln("Hello
-  World
-  !");
-  int a = 10;int b = 20; // Multiple statements per line ...
-  int c = a * b;
-  writeln(c);
-}
-
-struct S // Causes compiler error because structs have not been implemented yet.
+fn int main(string[] args, int x, int y)
 {
-  int x;
-  int y;
+  writeln("Hello World!");
+
+  return testReturnFunction();
 }
 
-fn test(T,T2)()
-{writeln("Hello"); // White spaces don't matter
-* // Left there to test compiler errors ...
-  // Changing * to } will make the program "correct"
+fn int testReturnFunction()
+{
+  return 0;
+}
