@@ -3,7 +3,7 @@ The primary frontend compiler for bausslang.
 
 ---
 
-Bausslang is a static typed programming language created as a simple learning project. The goal is to create a C-like programming language inspired by D, C#, Rust, Go, C and C++.
+Bausslang is a statically typed programming language created as a simple learning project. The goal is to create a C-like programming language inspired by D, C#, Rust, Go, C and C++.
 
 Eventually the goal is to write the compiler in itself.
 
@@ -35,14 +35,36 @@ fn main()
 **-- Module Statement**: Done
   
 **-- Import Statement**: Done
-  
-**-- Functions**: In Progress
 
-**-- Function Body**: In Progress
+**-- Variable Declaration**: Not Started
+  
+**-- Functions**: Done
+
+**-- Function Body**: Done
+
+**---- Return Expressions**: Done
+
+**-- Expressions**: Done
+
+**-- Arrays**: Done
+
+**-- Associative Arrays**: Done
+
+**-- Function Calls**: Done
+
+**-- If/Else/Else If Statements**: Not Started
+
+**-- Switch Statements**: Not Started
+
+**-- For Statements**: Not Started
+
+**-- Foreach Statements**: Not Started
+
+**-- While Statements**: Not Started
   
 **CTFE**: Not Started
 
-**Semantic Analysis**: Not Started
+**Semantic Analysis**: In Progress
 
 **Parse Code To C**: Not Started
 
