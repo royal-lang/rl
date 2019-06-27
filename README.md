@@ -37,6 +37,8 @@ fn main()
 **-- Import Statement**: Done
 
 **-- Variable Declaration**: Not Started
+
+**-- Type Information**: Not Started
   
 **-- Functions**: Done
 
@@ -51,6 +53,8 @@ fn main()
 **-- Associative Arrays**: Done
 
 **-- Function Calls**: Done
+
+**---- Chained Function Calls**: Not Started
 
 **-- If/Else/Else If Statements**: Not Started
 
