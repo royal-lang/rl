@@ -11,6 +11,7 @@ import std.stdio : writefln, writeln, readln;
 
 import core.tokenizer;
 import core.errors;
+import core.debugging;
 
 /// Enumeration of keywords (Types are not included.)
 enum Keyword : string
@@ -86,13 +87,18 @@ enum Keyword : string
 * Returns:
 *   True if the identifier is valid.
 */
-bool isValidIdentifier(string identifier)
+bool isValidIdentifier(string identifier, bool isNested = false)
 {
   import std.conv : to;
 
   if (!identifier || !identifier.length)
   {
     return false;
+  }
+
+  if (!isNested)
+  {
+    printDebug("Validating identifier: %s", identifier);
   }
 
   auto result =
@@ -102,11 +108,11 @@ bool isValidIdentifier(string identifier)
 
   if (identifier.length > 2)
   {
-    result = result && isValidIdentifier(to!string(identifier[0 .. 2]));
+    result = result && isValidIdentifier(to!string(identifier[0 .. 2]), true);
   }
   else if (identifier.length > 1)
   {
-    result = result && isValidIdentifier(to!string(identifier[0]));
+    result = result && isValidIdentifier(to!string(identifier[0]), true);
   }
 
   return result;
@@ -126,8 +132,13 @@ bool isQualifiedSymbol(string symbol)
     case "||":
     case "&&":
     case "^^":
-    case "==":
     case "!!":
+    case "==":
+    case ">":
+    case ">=":
+    case "<=":
+    case "<":
+    case "!=":
     case ".":
     case ",":
     case "(":
@@ -365,6 +376,10 @@ class ModuleObject
   FunctionObject[] internalFunctions;
   /// The functions of the module.
   FunctionObject[] functions;
+  /// The line of the module object.
+  size_t line;
+  /// The source of the module object.
+  string source;
 }
 
 /**
@@ -377,7 +392,10 @@ class ModuleObject
 */
 ModuleObject parseModule(Token moduleToken, string source)
 {
+  printDebug("Parsing module ...");
+
   auto moduleObject = new ModuleObject;
+  moduleObject.source = source;
 
   size_t line = 0;
 
@@ -388,6 +406,8 @@ ModuleObject parseModule(Token moduleToken, string source)
     switch (token.getParserType)
     {
       case ParserType.MODULE:
+        printDebug("Parsing module statement: %s", token.statement);
+
         if (moduleObject.name)
         {
           line.printError(source, "Only one module statement is allowed per module.");
@@ -464,6 +484,8 @@ ModuleObject parseModule(Token moduleToken, string source)
     }
   }
 
+  printDebug("Finished parsing module ...");
+
   return moduleObject;
 }
 
@@ -472,7 +494,10 @@ class ImportObject
 {
   /// The module path of the import.
   string modulePath;
+  /// The members to import.
   string[] members;
+  /// The line of the import object.
+  size_t line;
 }
 
 /**
@@ -486,6 +511,8 @@ class ImportObject
 */
 ImportObject parseImport(Token token, string source, size_t line)
 {
+  printDebug("Parsing import: %s", token.statement);
+
   if (!token.statement || token.statement.length < 3)
   {
     line.printError(source, "Missing name argument for import statement.");
@@ -537,6 +564,9 @@ ImportObject parseImport(Token token, string source, size_t line)
   auto importObject = new ImportObject;
   importObject.modulePath = name;
   importObject.members = members.dup;
+  importObject.line = line;
+
+  printDebug("Finished parsing import ...");
 
   return importObject;
 }
@@ -544,8 +574,10 @@ ImportObject parseImport(Token token, string source, size_t line)
 /// An import object.
 class IncludeObject
 {
-  /// The module path of the import.
+  /// The path of the header included.
   string headerPath;
+  /// The line of the include object.
+  size_t line;
 }
 
 /**
@@ -559,6 +591,8 @@ class IncludeObject
 */
 IncludeObject parseInclude(Token token, string source, size_t line)
 {
+  printDebug("Parsing include: %s", token.statement);
+
   if (!token.statement || token.statement.length != 3)
   {
     line.printError(source, "Missing path argument for include statement.");
@@ -586,7 +620,10 @@ IncludeObject parseInclude(Token token, string source, size_t line)
   }
 
   auto includeObject = new IncludeObject;
-  includeObject.headerPath = name;
+  includeObject.headerPath = name[1 .. $-1];
+  includeObject.line = line;
+
+  printDebug("Finished parsing include ...");
 
   return includeObject;
 }
@@ -596,14 +633,16 @@ class FunctionObject
 {
   /// The name of the function.
   string name;
-  /// The definition arguments of the function such as return type etc.
-  string[] definitionArguments;
+  /// The return type of the function.
+  string returnType;
   /// The template parameters of the function.
   Parameter[] templateParameters;
   /// The parameters of the function.
   Parameter[] parameters;
   /// The scopes of the function.
   ScopeObject[] scopes;
+  /// The line of the function object.
+  size_t line;
 }
 
 /// A parameter.
@@ -613,6 +652,8 @@ class Parameter
   string type;
   /// The name.
   string name;
+  /// The line of the parameter.
+  size_t line;
 }
 
 /**
@@ -625,6 +666,8 @@ class Parameter
 */
 FunctionObject parseInternalFunction(Token functionToken, string source)
 {
+  printDebug("Parsing internal function: %s", functionToken.statement);
+
   size_t line = functionToken.retrieveLine;
 
   functionToken.statement = functionToken.statement[1 .. $];
@@ -648,11 +691,14 @@ FunctionObject parseInternalFunction(Token functionToken, string source)
 */
 FunctionObject parseFunction(Token functionToken, string source)
 {
+  printDebug("Parsing function: %s", functionToken.statement);
+
   import std.array : join;
 
   auto functionObject = new FunctionObject;
 
   size_t line = functionToken.retrieveLine;
+  functionObject.line = line;
 
   if (!functionToken.statement || functionToken.statement.length < 4)
   {
@@ -662,9 +708,9 @@ FunctionObject parseFunction(Token functionToken, string source)
 
   bool parseBody = functionToken.statement[$-1] != ";";
 
-  string[] beforeParameters = [];
-  string[] parameters1 = [];
-  string[] parameters2 = [];
+  STRING[] beforeParameters = [];
+  STRING[] parameters1 = [];
+  STRING[] parameters2 = [];
   bool emptyParameters = false;
 
   size_t statementCollection = 0;
@@ -724,6 +770,21 @@ FunctionObject parseFunction(Token functionToken, string source)
 
   functionObject.name = beforeParameters[$-1];
 
+  if (!functionObject.name.isValidIdentifier)
+  {
+    line.printError(source, "Invalid function name.");
+    return null;
+  }
+
+  if (beforeParameters.length > 1)
+  {
+    functionObject.returnType ~= beforeParameters[0 .. $-1].join("");
+  }
+  else
+  {
+    functionObject.returnType ~= "void";
+  }
+
   if (statementCollection == 1 && endedCollection != 1)
   {
     line.printError(source, "Missing '%s' from function declarationz.", ")");
@@ -736,17 +797,12 @@ FunctionObject parseFunction(Token functionToken, string source)
     return null;
   }
 
-  if (beforeParameters.length > 1)
-  {
-    functionObject.definitionArguments = beforeParameters[0 .. $-1].dup;
-  }
-
   Parameter[] parametersObjects1 = [];
   Parameter[] parametersObjects2 = [];
 
   if (parameters1 && parameters1.length)
   {
-    string[] args;
+    STRING[] args;
     auto paramIndex = 0;
 
     foreach (entry; parameters1)
@@ -763,6 +819,7 @@ FunctionObject parseFunction(Token functionToken, string source)
           auto param = new Parameter;
           param.type = args[0 .. $-1].join("");
           param.name = args[$-1];
+          param.line = entry.line;
           parametersObjects1 ~= param;
 
           if (!param.name.isValidIdentifier)
@@ -792,6 +849,7 @@ FunctionObject parseFunction(Token functionToken, string source)
       auto param = new Parameter;
       param.type = args[0 .. $-1].join("");
       param.name = args[$-1];
+      param.line = args[0].line;
       parametersObjects1 ~= param;
 
       if (!param.name.isValidIdentifier)
@@ -808,7 +866,7 @@ FunctionObject parseFunction(Token functionToken, string source)
 
   if (parameters2 && parameters2.length)
   {
-    string[] args;
+    STRING[] args;
     auto paramIndex = 0;
 
     foreach (entry; parameters2)
@@ -825,6 +883,7 @@ FunctionObject parseFunction(Token functionToken, string source)
           auto param = new Parameter;
           param.type = args[0 .. $-1].join("");
           param.name = args[$-1];
+          param.line = entry.line;
           parametersObjects2 ~= param;
 
           if (!param.name.isValidIdentifier)
@@ -854,6 +913,7 @@ FunctionObject parseFunction(Token functionToken, string source)
       auto param = new Parameter;
       param.type = args[0 .. $-1].join("");
       param.name = args[$-1];
+      param.line = args[0].line;
       parametersObjects2 ~= param;
 
       if (!param.name.isValidIdentifier)
@@ -884,8 +944,6 @@ FunctionObject parseFunction(Token functionToken, string source)
     return null;
   }
 
-  // TODO: Parse defition arguments such as return type, access modifier etc.
-
   if (parseBody)
   {
     auto scopeObjects = parseScopes(functionToken, source, line, "function", functionObject.name);
@@ -895,6 +953,8 @@ FunctionObject parseFunction(Token functionToken, string source)
       functionObject.scopes = scopeObjects.dup;
     }
   }
+
+  printDebug("Finished parsing function.");
 
   return functionObject;
 }
@@ -908,6 +968,8 @@ class ScopeObject
   FunctionCallExpression functionCallExpression;
   /// The return expression of the scope.
   ReturnExpression returnExpression;
+  /// The line for the scope object.
+  size_t line;
 }
 
 /**
@@ -923,6 +985,8 @@ class ScopeObject
 */
 ScopeObject[] parseScopes(Token scopeToken, string source, size_t line, string scopeName, string sourceIdentifier)
 {
+  printDebug("Parsing scope.");
+
   if (!scopeToken.tokens || scopeToken.tokens.length < 2)
   {
     line.printError(source, "Missing %s body.", scopeName);
@@ -969,6 +1033,7 @@ ScopeObject[] parseScopes(Token scopeToken, string source, size_t line, string s
   foreach (token; scopeToken.tokens[1 .. $-1])
   {
     line = token.retrieveLine;
+    scopeObject.line = line;
 
     switch (token.getParserType)
     {
@@ -987,22 +1052,22 @@ ScopeObject[] parseScopes(Token scopeToken, string source, size_t line, string s
       case ParserType.EMPTY: break;
 
       default:
-        auto assignmentExpression = parseAssignmentExpression(token, source, line);
+        auto functionCallExpression = parseFunctionCallExpression(token, source, line);
 
-        if (assignmentExpression)
+        if (functionCallExpression)
         {
-          scopeObject.assignmentExpression = assignmentExpression;
+          scopeObject.functionCallExpression = functionCallExpression;
           scopeObjects ~= scopeObject;
 
           scopeObject = new ScopeObject;
         }
         else
         {
-          auto functionCallExpression = parseFunctionCallExpression(token, source, line);
+          auto assignmentExpression = parseAssignmentExpression(token, source, line);
 
-          if (functionCallExpression)
+          if (assignmentExpression)
           {
-            scopeObject.functionCallExpression = functionCallExpression;
+            scopeObject.assignmentExpression = assignmentExpression;
             scopeObjects ~= scopeObject;
 
             scopeObject = new ScopeObject;
@@ -1019,6 +1084,8 @@ ScopeObject[] parseScopes(Token scopeToken, string source, size_t line, string s
     }
   }
 
+  printDebug("Finished parsing scope.");
+
   return scopeObjects;
 }
 
@@ -1031,8 +1098,10 @@ class AssignmentExpression
   string operator;
   /// The right-hand operation.
   string[] rightHand;
-  /// The right-hand function call expression.
-  FunctionCallExpression rightHandCall;
+  /// The line of the assignment expression.
+  size_t line;
+  /// The right hand expression of the assignment.
+  Expression rightHandExpression;
 }
 
 /**
@@ -1046,6 +1115,8 @@ class AssignmentExpression
 */
 AssignmentExpression parseAssignmentExpression(Token token, string source, size_t line)
 {
+  printDebug("Parsing assignment expression or increment/decrement expression. Tokens: %s", token.statement);
+
   string[] leftHand = [];
   string operator = "";
   string[] rightHand = [];
@@ -1091,6 +1162,7 @@ AssignmentExpression parseAssignmentExpression(Token token, string source, size_
     exp.leftHand = leftHand.dup;
     exp.operator = operator;
     exp.rightHand = rightHand.dup;
+    exp.line = line;
 
     return exp;
   }
@@ -1122,17 +1194,27 @@ AssignmentExpression parseAssignmentExpression(Token token, string source, size_
   exp.leftHand = leftHand.dup;
   exp.operator = operator;
   exp.rightHand = rightHand.dup;
+  exp.line = line;
 
-  writeln(exp.rightHand);
-
-  auto functionCallExpression = parseFunctionCallExpression(exp.rightHand, source, line);
-
-  if (functionCallExpression)
+  if (exp.rightHand && exp.rightHand.length)
   {
-    exp.rightHandCall = functionCallExpression;
+    auto rightHandExpression = parseRightHandExpression(exp.rightHand, source, line, true);
+
+    if (!rightHandExpression || (!rightHandExpression.tokens && !rightHandExpression.arrayExpression))
+    {
+      if (!hasQueuedErrors)
+      {
+        line.queueError(source, "Failed to parse right-hand expression.");
+      }
+      return null;
+    }
+
+    exp.rightHandExpression = rightHandExpression;
   }
 
   clearQueuedErrors(); // clean up errors
+
+  printDebug("Finished parsing assignment expression or increment/decrement expression.");
 
   return exp;
 }
@@ -1143,7 +1225,11 @@ class FunctionCallExpression
   /// The identifier of the function call.
   string identifier;
   /// The parameters passed to the function call.
+  string[] templateParameters;
+  /// The parameters passed to the function call.
   string[] parameters;
+  /// The line of the function call expression.
+  size_t line;
 }
 
 /**
@@ -1172,11 +1258,29 @@ FunctionCallExpression parseFunctionCallExpression(Token token, string source, s
 * Returns:
 *   The function call expression created.
 */
-FunctionCallExpression parseFunctionCallExpression(string[] statement, string source, size_t line)
+FunctionCallExpression parseFunctionCallExpression(string[] statement, string source, size_t line, bool skipEndCheck = false)
 {
+  printDebug("Parsing function call: %s", statement);
+
+  statement = statement.dup;
+
   import std.array : join;
 
   clearQueuedErrors();
+
+  if (skipEndCheck)
+  {
+    if (!statement || !statement.length)
+    {
+      line.queueError(source, "Missing function call expression.");
+      return null;
+    }
+
+    if (statement[$-1] != ";")
+    {
+      statement ~= ";";
+    }
+  }
 
   if (!statement || statement.length < 4)
   {
@@ -1185,13 +1289,13 @@ FunctionCallExpression parseFunctionCallExpression(string[] statement, string so
 
   if (statement[1] != "(")
   {
-    line.queueError(source, "Missing '%s' from function call.", "(");
+    line.queueError(source, "Missing '%s' from function call. Found '%s' instead.", "(", statement[1]);
     return null;
   }
 
   if (statement[$-2] != ")")
   {
-    line.queueError(source, "Missing '%s' from function call.", ")");
+    line.queueError(source, "Missing '%s' from function call. Found '%s' instead.", ")", statement[1]);
     return null;
   }
 
@@ -1203,6 +1307,7 @@ FunctionCallExpression parseFunctionCallExpression(string[] statement, string so
 
   auto functionCallExpression = new FunctionCallExpression;
   functionCallExpression.identifier = statement[0];
+  functionCallExpression.line = line;
 
   if (!functionCallExpression.identifier.isValidIdentifier)
   {
@@ -1210,20 +1315,49 @@ FunctionCallExpression parseFunctionCallExpression(string[] statement, string so
     return null;
   }
 
+  string[] parameters1 = [];
+  string[] parameters2 = null;
+
   string[] values = [];
+  bool parsedTemplate = false;
+
   bool inArray = false;
 
-  foreach (entry; statement[2 .. $-2])
+  auto parseStatement = statement[2 .. $-2];
+
+  foreach (ref i; 0 .. parseStatement.length)
   {
-    if (inArray && entry == "]")
+    auto entry = parseStatement[i];
+    auto lastEntry = i > 1 ? parseStatement[i - 1] : "";
+    auto nextEntry = i < (parseStatement.length - 1) ? parseStatement[i + 1] : "";
+
+    if (!inArray && entry == ")" && nextEntry == "(")
+    {
+      if (parsedTemplate)
+      {
+        line.queueError(source, "Invalid function call.");
+        return null;
+      }
+
+      if (values && values.length)
+      {
+        if (parsedTemplate) parameters2 ~= values.join("");
+        else parameters1 ~= values.join("");
+
+        values = [];
+      }
+
+      parsedTemplate = true;
+      parameters2 = [];
+
+      i++;
+    }
+    else if (inArray && entry == "]")
     {
       inArray = false;
       values ~= entry;
-
-      functionCallExpression.parameters ~= values.join("");
-      values = [];
     }
-    else if (!inArray && entry == "[")
+    else if (!inArray && entry == "[" && !values && !values.length)
     {
       values ~= entry;
       inArray = true;
@@ -1240,8 +1374,25 @@ FunctionCallExpression parseFunctionCallExpression(string[] statement, string so
     }
     else if (!inArray && entry == ",")
     {
-      line.queueError(source, "Found '%s' when expected parameter.", ",");
-      return null;
+      if (!values || !values.length)
+      {
+        line.queueError(source, "Missing values for entry.");
+        return null;
+      }
+
+      foreach (value; values)
+      {
+        if ((value != "!" && value != "!!" && value != "[" && value != "]" && value != "," && value != ":" && value.isQualifiedSymbol) || value == "()")
+        {
+          line.queueError(source, "Invalid parameter value: %s", value);
+          return null;
+        }
+      }
+
+      if (parsedTemplate) parameters2 ~= values.join("");
+      else parameters1 ~= values.join("");
+
+      values = [];
     }
     else if (inArray)
     {
@@ -1249,7 +1400,7 @@ FunctionCallExpression parseFunctionCallExpression(string[] statement, string so
     }
     else
     {
-      functionCallExpression.parameters ~= entry;
+      values ~= entry;
     }
   }
 
@@ -1259,16 +1410,43 @@ FunctionCallExpression parseFunctionCallExpression(string[] statement, string so
     return null;
   }
 
+  if (values && values.length)
+  {
+    foreach (value; values)
+    {
+      if ((value != "!" && value != "!!" && value != "[" && value != "]" && value != "," && value != ":" && value.isQualifiedSymbol) || value == "()")
+      {
+        line.queueError(source, "Invalid parameter value: %s", value);
+        return null;
+      }
+    }
+
+    if (parsedTemplate) parameters2 ~= values.join("");
+    else parameters1 ~= values.join("");
+
+    values = [];
+  }
+
+  if (parameters1 && parameters1.length && parameters2)
+  {
+    functionCallExpression.parameters = parameters2;
+    functionCallExpression.templateParameters = parameters1;
+  }
+  else
+  {
+    functionCallExpression.parameters = parameters1;
+  }
+
   return functionCallExpression;
 }
 
 /// A return expression.
 class ReturnExpression
 {
-  /// The arguments of the return expression.
-  string[] arguments;
-  /// The function call expression of the return expression.
-  FunctionCallExpression returnCall;
+  /// The expression of the return expression.
+  Expression expression;
+  /// The line of the return expression.
+  size_t line;
 }
 
 /**
@@ -1298,20 +1476,541 @@ ReturnExpression parseReturnExpression(Token token, string source, size_t line)
   }
 
   auto returnExpression = new ReturnExpression;
-  returnExpression.arguments = token.statement[1 .. $].map!(s => s.s).array;
 
-  auto functionCallExpression = parseFunctionCallExpression(returnExpression.arguments, source, line);
+  auto rightHandExpression = parseRightHandExpression(token.statement[1 .. $].map!(s => s.s).array, source, line, false);
 
-  if (functionCallExpression)
+  if (!rightHandExpression || (!rightHandExpression.tokens && !rightHandExpression.arrayExpression))
   {
-    returnExpression.returnCall = functionCallExpression;
+    if (!hasQueuedErrors)
+    {
+      line.queueError(source, "Failed to parse right-hand expression.");
+    }
+    return null;
+  }
+
+  returnExpression.expression = rightHandExpression;
+
+  returnExpression.line = line;
+
+  return returnExpression;
+}
+
+/// An expression. (Typically right-hand expressions.)
+class Expression
+{
+  /// Boolean determining whether the expression is mathematical. If false then it'll be assumed to be a boolean expression.
+  bool isMathematicalExpression;
+  /// The tokens of the expression.
+  ExpressionToken[] tokens;
+  /// The array expression, if not a standard expression.
+  ArrayExpression arrayExpression;
+  /// The line of the expression.
+  size_t line;
+}
+
+/// An expression token.
+class ExpressionToken
+{
+  /// The tokens of the expression token.
+  string[] tokens;
+  /// Boolean determining whether the token is a function call or not.
+  bool isFunctionCall;
+  /// The function call of the token.
+  FunctionCallExpression functionCallExpression;
+  /// The line of the token.
+  size_t line;
+}
+
+/**
+* Checks whether a specific symbol is a qualified symbol for the given expression type.
+* Params:
+*   symbol = The symbol to check for qualification.
+*   isMathematicalExpression = Boolean determining whether the expression to validate for is mathematical or boolean.
+* Returns:
+*   Returns true if the symbol is qualified, false otherwise.
+*/
+bool isQualifiedExpressionSymbol(string symbol, bool isMathematicalExpression)
+{
+  if (isMathematicalExpression)
+  {
+    switch (symbol)
+    {
+      case "(":
+      case ")":
+      case "+":
+      case "-":
+      case "*":
+      case "/":
+      case "%":
+      case "^":
+      case "<<":
+      case ">>":
+      case "|":
+      case "~":
+      case "&":
+      case "^^":
+        return true;
+
+      default: return false;
+    }
   }
   else
   {
-    printQueuedErrors();
+    switch (symbol)
+    {
+      case "(":
+      case ")":
+      case "||":
+      case "&&":
+      case "~":
+      case ">":
+      case ">=":
+      case "<=":
+      case "<":
+      case "!=":
+      case "!":
+      case "!!":
+      case "==":
+        return true;
+
+      default: return false;
+    }
+  }
+}
+
+/**
+* Parses a right-hand expression.
+* Params:
+*   expression = The expression tokens to parse.
+*   source = The source of the right-hand expression.
+*   line = The line of the right-hand expression.
+*   queueErrors = Boolean determining whether errors are printed directly or queued.
+*   isForcedBooleanExpression = Boolean determining whether the expression should be forcefully parsed as a boolean expression. Ex. if statements will force a boolean expression.
+* Returns:
+*   An expression if parsed correctly, null otherwise.
+*/
+Expression parseRightHandExpression(string[] expression, string source, size_t line, bool queueErrors, bool isForcedBooleanExpression = false)
+{
+  clearQueuedErrors();
+
+  auto exp = new Expression;
+
+  if (!expression || !expression.length)
+  {
+    if (queueErrors) line.queueError(source, "Empty expression.");
+    else line.printError(source, "Empty expression.");
+    return exp;
   }
 
-  return returnExpression;
+  if (expression[$-1] != ";")
+  {
+    if (queueErrors) line.queueError(source, "Expected '%s' but found '%s'", ";", expression[$-1]);
+    else line.printError(source, "Expected '%s' but found '%s'", ";", expression[$-1]);
+    return null;
+  }
+
+  if (!isForcedBooleanExpression)
+  {
+    if (expression[0] == "[")
+    {
+      auto arrayExpression = parseArrayExpression(expression, source, line, queueErrors);
+
+      if (arrayExpression)
+      {
+        exp.arrayExpression = arrayExpression;
+        return exp;
+      }
+      else
+      {
+        if (!queueErrors)
+        {
+          printQueuedErrors();
+        }
+
+        return null;
+      }
+    }
+  }
+
+  exp.isMathematicalExpression = expression.isMathematicalExpression;
+
+  if (isForcedBooleanExpression)
+  {
+    exp.isMathematicalExpression = false;
+  }
+
+  auto currentToken = new ExpressionToken;
+
+  bool inFunction = false;
+  size_t open = 0;
+  size_t closed = 0;
+  bool parsedTemplate = false;
+
+  foreach (ref i; 0 .. (expression.length - 1))
+  {
+    auto token = expression[i];
+    auto last = i > 0 ? expression[i - 1] : "";
+    auto next = i < (expression.length - 1) ? expression[i + 1] : "";
+
+    auto lastToken = exp.tokens.length ? exp.tokens[$-1] : null;
+
+    if (inFunction)
+    {
+      if (token == ")")
+      {
+        currentToken.tokens ~= token;
+        currentToken.isFunctionCall = true;
+
+        if (next == "(" && !parsedTemplate)
+        {
+          parsedTemplate = true;
+          i++;
+          currentToken.tokens ~= next;
+        }
+        else if (next == "(" && parsedTemplate)
+        {
+          if (queueErrors) line.queueError(source, "Invalid function call.");
+          else line.printError(source, "Invalid function call.");
+          return null;
+        }
+        else
+        {
+          inFunction = false;
+
+          exp.tokens ~= currentToken;
+
+          currentToken = new ExpressionToken;
+        }
+      }
+      else
+      {
+        currentToken.tokens ~= token;
+      }
+    }
+    else if (token.isQualifiedSymbol && !token.isQualifiedExpressionSymbol(exp.isMathematicalExpression))
+    {
+      if (queueErrors) line.queueError(source, "Illegal symbol found in expression. Symbol: '%s'", token);
+      else line.printError(source, "Illegal symbol found in expression. Symbol: '%s'", token);
+      return null;
+    }
+    else if (!token.isQualifiedSymbol  && next == "(")
+    {
+      if (last && last.length && !last.isQualifiedSymbol && token == "(")
+      {
+        if (queueErrors) line.queueError(source, "Missing operator from expression. Current token: '%s', last token: '%s'", token, last ? last : "");
+        else line.printError(source, "Missing operator from expression. Current token: '%s', last token: '%s'", token, last ? last : "");
+        return null;
+      }
+
+      if (last && last.length && !last.isQualifiedExpressionSymbol(exp.isMathematicalExpression))
+      {
+        if (queueErrors) line.queueError(source, "Illegal symbol found in expression. Symbol: '%s'", last ? last : "");
+        else line.printError(source, "Illegal symbol found in expression. Symbol: '%s'", last ? last : "");
+        return null;
+      }
+
+      if (currentToken.tokens && currentToken.tokens.length)
+      {
+        exp.tokens ~= currentToken;
+      }
+
+      currentToken = new ExpressionToken;
+
+      currentToken.tokens ~= token;
+
+      parsedTemplate = false;
+      inFunction = true;
+      continue;
+    }
+    else if (last && last.length && !last.isQualifiedSymbol && token == "(" && currentToken.tokens && currentToken.tokens.length)
+    {
+      if (queueErrors) line.queueError(source, "Missing operator from expression. Current token: '%s', last token: '%s', expression part: %s", token, last ? last : "", currentToken.tokens);
+      else line.printError(source, "Missing operator from expression. Current token: '%s', last token: '%s', expression part: %s", token, last ? last : "", currentToken.tokens);
+      return null;
+    }
+    else if ((last && last.length && last.isQualifiedSymbol && !last.isQualifiedExpressionSymbol(exp.isMathematicalExpression)) && token == "(" && currentToken.tokens && currentToken.tokens.length)
+    {
+      if (queueErrors) line.queueError(source, "Illegal symbol found in expression. Symbol: '%s', current token: '%s', expression parts: %s", last ? last : "", token, currentToken.tokens);
+      else line.printError(source, "Illegal symbol found in expression. Symbol: '%s', current token: '%s', expression parts: %s", last ? last : "", token, currentToken.tokens);
+      return null;
+    }
+    else if (token == "(" || token == ")")
+    {
+      if (token == "(")
+      {
+        open++;
+      }
+      else if (token == ")")
+      {
+        closed++;
+      }
+
+      currentToken.tokens ~= token;
+
+      if (currentToken.tokens && currentToken.tokens.length)
+      {
+        exp.tokens ~= currentToken;
+
+        currentToken = new ExpressionToken;
+      }
+    }
+    else
+    {
+      currentToken.tokens ~= token;
+    }
+  }
+
+  if (open != closed)
+  {
+    if (queueErrors) line.queueError(source, "Missing '%s' from expression.", open > closed ? ")" : "(");
+    else line.printError(source, "Missing '%s' from expression.", open > closed ? ")" : "(");
+    return null;
+  }
+
+  if (currentToken.tokens && currentToken.tokens.length)
+  {
+    exp.tokens ~= currentToken;
+  }
+
+  string[] validationTokens = [];
+
+  foreach (expToken; exp.tokens)
+  {
+    if (expToken.isFunctionCall)
+    {
+      auto functionCallExpression = parseFunctionCallExpression(expToken.tokens, source, line, true); // skipEndCheck
+
+      if (functionCallExpression)
+      {
+        expToken.functionCallExpression = functionCallExpression;
+        validationTokens ~= "__FN_" ~ expToken.functionCallExpression.identifier ~  "__"; // Because we just need to test the expression is valid.
+      }
+      else
+      {
+        if (!queueErrors)
+        {
+          printQueuedErrors();
+        }
+
+        return null;
+      }
+    }
+    else
+    {
+      foreach (token; expToken.tokens)
+      {
+        validationTokens ~= token;
+      }
+    }
+  }
+
+  if (!validationTokens || !validationTokens.length)
+  {
+    if (queueErrors) line.queueError(source, "Failed to parse expression. Tokens: %s", expression);
+    else line.printError(source, "Failed to parse expression. Tokens: %s", expression);
+    return null;
+  }
+
+  import core.tools;
+  auto r = shuntingYardCalculation(validationTokens, source, line, exp.isMathematicalExpression, queueErrors);
+
+  if (!r || !r.length)
+  {
+    if (queueErrors) line.queueError(source, "Failed to parse expression.");
+    else line.printError(source, "Failed to parse expression.");
+    return null;
+  }
+
+  return exp;
+}
+
+/**
+* Checks whether a set of tokens is a mathematical expression or not (boolean expression).
+* Params:
+*   tokens = The set of tokens to validate.
+* Returns:
+*   True if the set of tokens are a part of a mathematical expression, false otherwise.
+*/
+bool isMathematicalExpression(string[] tokens)
+{
+  const mathSymbols = ["+", "-", "*", "/", "%", "^", "<<", ">>", "|"/*, "~"*/, "&"];
+  const booleanSymbols = ["||", "&&"/*, "~"*/, ">", ">=", "<=", "<", "!=", "!", "!!", "=="];
+  // ~ is valid for both mathematical and boolean expressions.
+
+  foreach (token; tokens)
+  {
+    import std.algorithm : canFind;
+
+    foreach (booleanSymbol; booleanSymbols)
+    {
+      if (token == booleanSymbol)
+      {
+        return false;
+      }
+    }
+
+    foreach (mathSymbol; mathSymbols)
+    {
+      if (token == mathSymbol)
+      {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+/// An array expression.
+class ArrayExpression
+{
+  /// The values of the array expression.
+  ArrayValue[] values;
+  /// The line of the array expression.
+  size_t line;
+  /// Boolean determining whether the expression is an associative array or not.
+  bool isAssociativeArray;
+}
+
+/// An array value.
+class ArrayValue
+{
+  /// The values of the array value.
+  string[] values;
+}
+
+/**
+* Parses an array expression.
+* Params:
+*   tokens = The tokens of the array expression.
+*   source = The source of the array expression.
+*   line = The line of the array expression.
+*   queueErrors = Boolean determining whether errors should be printed directly or queued.
+* Returns:
+*   Returns an array expression if parsed correctly, null otherwise.
+*/
+ArrayExpression parseArrayExpression(string[] tokens, string source, size_t line, bool queueErrors)
+{
+  clearQueuedErrors();
+
+  if (!tokens || tokens.length < 3)
+  {
+    if (queueErrors) line.queueError(source, "Missing array expression.");
+    else line.printError(source, "Missing array expression.");
+    return null;
+  }
+
+  if (tokens[$-1] != ";")
+  {
+    if (queueErrors) line.queueError(source, "Expected '%s' but found '%s'", ";", tokens[$-1]);
+    else line.printError(source, "Expected '%s' but found '%s'", ";", tokens[$-1]);
+    return null;
+  }
+
+  if (tokens[0] != "[")
+  {
+    if (queueErrors) line.queueError(source, "Expected '%s' but found '%s'", "[", tokens[0]);
+    else line.printError(source, "Expected '%s' but found '%s'", "]", tokens[0]);
+    return null;
+  }
+
+  if (tokens[$-2] != "]")
+  {
+    if (queueErrors) line.queueError(source, "Expected '%s' but found '%s'", "]", tokens[$-2]);
+    else line.printError(source, "Expected '%s' but found '%s'", "]", tokens[$-2]);
+    return null;
+  }
+
+  auto array = new ArrayExpression;
+  array.line = line;
+
+  if (tokens.length == 3)
+  {
+    return array; // Empty array.
+  }
+
+  auto parseStatement = tokens[1 .. $-2];
+
+  auto value = new ArrayValue;
+  bool lookForAssociative = false;
+
+  foreach (ref i; 0 .. parseStatement.length)
+  {
+    auto entry = parseStatement[i];
+    auto lastEntry = i > 1 ? parseStatement[i - 1] : "";
+    auto nextEntry = i < (parseStatement.length - 1) ? parseStatement[i + 1] : "";
+
+    if (entry == ":")
+    {
+      array.isAssociativeArray = true;
+      lookForAssociative = true;
+    }
+    else if (entry == ",")
+    {
+      if (!value.values || !value.values.length)
+      {
+        if (queueErrors) line.queueError(source, "Empty array value.");
+        else line.printError(source, "Empty array value.");
+        return null;
+      }
+
+      if (array.isAssociativeArray && value.values.length != 2)
+      {
+        if (queueErrors) line.queueError(source, "Missing associative array value.");
+        else line.printError(source, "Missing associative array value.");
+        return null;
+      }
+
+      lookForAssociative = false;
+
+      array.values ~= value;
+
+      value = new ArrayValue;
+    }
+    else if (value.values && value.values.length && !lookForAssociative)
+    {
+      if (array.isAssociativeArray)
+      {
+        if (queueErrors) line.queueError(source, "Missing associative array key.");
+        else line.printError(source, "Missing associative array key.");
+      }
+      else
+      {
+        if (queueErrors) line.queueError(source, "Missing array value separator.");
+        else line.printError(source, "Missing array value separator.");
+      }
+      return null;
+    }
+    else
+    {
+      if (value.values && value.values.length == 2)
+      {
+        if (queueErrors) line.queueError(source, "Too many values for array entry.");
+        else line.printError(source, "Too many values for array entry.");
+        return null;
+      }
+
+      value.values ~= entry;
+    }
+  }
+
+  if (!value.values || !value.values.length)
+  {
+    if (queueErrors) line.queueError(source, "Empty array value.");
+    else line.printError(source, "Empty array value.");
+    return null;
+  }
+
+  if (array.isAssociativeArray && value.values.length != 2)
+  {
+    if (queueErrors) line.queueError(source, "Missing associative array value.");
+    else line.printError(source, "Missing associative array value.");
+    return null;
+  }
+
+  array.values ~= value;
+
+  return array;
 }
 
 /**

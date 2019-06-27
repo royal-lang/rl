@@ -7,7 +7,7 @@
     "statement": ["import", "std.stdio", ":", "writeln", ";"],
     "tokens": []
   },{
-    "statement": ["fn", "int", "main", "(", "string", "[]", "args", ",", "int", "x", ",", "int", "y", ")"],
+    "statement": ["fn", "int", "main", "(", "string", "[]", "args", ")"],
     "tokens": [{
         "statement": ["{"],
         "tokens": []

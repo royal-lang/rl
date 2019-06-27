@@ -12,4 +12,7 @@ public
   import core.tokenizer;
   import core.parser;
   import core.errors;
+  import core.semantic;
+  import core.tools;
+  import core.debugging;
 }

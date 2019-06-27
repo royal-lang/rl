@@ -58,6 +58,12 @@ void printError(size_t line, string source, string message)
 /// Queued compiler error messages.
 private string[] queuedMessages = [];
 
+/// Gets a boolean determining whether there are any queued error messages or not.
+@property bool hasQueuedErrors()
+{
+  return queuedMessages && queuedMessages.length;
+}
+
 /**
 * Queues a compilation error. Compilation will not halt after the current step unless printQueuedErrors() is called.
 * Params:

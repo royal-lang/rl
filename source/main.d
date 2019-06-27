@@ -19,215 +19,137 @@ void main()
 {
   try
   {
+    printDebug("Starting compilation ...");
     run();
+    printDebug("Compilation has finished ...");
   }
   catch (Throwable t)
   {
     writeln(t);
   }
 
-  readln(); // So it won't just stop right away, making it easier to debug with print statements.
+  readln(); // So it won't just stop right away, making it easier to debug with print statements during development.
 }
 
 /// The function that runs the compiler.
 void run()
 {
+  printDebug("Loading settings ...");
+
   auto settings = loadProjectSettings("tests/test1", "project.lp");
+
+  printDebug("Loaded settings ...");
 
   if (settings.sourcePaths)
   {
+    ModuleObject[string] modules;
+
     foreach (sourcePath; settings.sourcePaths)
     {
-      handle(settings.projectPath  ~ "/" ~ sourcePath);
+      printDebug("Handling source path: %s", sourcePath);
+
+      foreach (mod; handle(settings.projectPath  ~ "/" ~ sourcePath))
+      {
+        printDebug("Parsed module: %s", mod.name);
+        modules[mod.name] = mod;
+      }
+    }
+
+    // Semantic analysis
+
+    printDebug("Starting semantic analysis ...");
+
+    analyzeSemantic(modules);
+
+    if (hasErrors)
+    {
+      return;
+    }
+
+    // Parse code to external soruce (ex. C)
+
+    if (hasErrors)
+    {
+      return;
+    }
+
+    // Compile code (ex. generated C code)
+
+    if (hasErrors)
+    {
+      return;
     }
   }
 }
 
 /**
 * Handles and compiles a specific source directory.
+* Params:
+*   sourceDirectory = The source directory to handle.
+* Returns:
+*   An array of module objects parsed from the source files in the directory.
 */
-void handle(string sourceDirectory)
+ModuleObject[] handle(string sourceDirectory)
 {
   string[] files = [];
   string[] directories = [];
 
+  ModuleObject[] modules = [];
+
   if (loadEntries(sourceDirectory, files, directories))
   {
-    ModuleObject[] modules = [];
     if (files && files.length)
     {
+      printDebug("Parsing files ...");
+
       foreach (file; files)
       {
+        printDebug("Parsing file: %s", file);
+
         // Tokenize
+        printDebug("Splitting the file into tokens ...");
+
         auto tokens = tokenizeFile(file, false);
+
+        printDebug("Grouping tokens ...");
 
         auto rootToken = groupTokens(tokens);
 
-
-        // Parse tokens into semantic data
-
-        writeln();
-        writeln();
-        writeln();
+        printDebug("Parsing the tokens ...");
 
         auto moduleObject = parseModule(rootToken, file);
+
+        printDebug("Writing parser tree ...");
 
         import std.file : write;
         write("parsertrees/parsertree_" ~ moduleObject.name ~ ".json", rootToken.toJson(0));
 
-        writeln();
-        writeln();
-        writeln();
-
-        writeln("Module: ", moduleObject.name);
-
-        if (moduleObject.imports)
-        {
-          foreach (imp; moduleObject.imports)
-          {
-            writeln("Import: ", imp.modulePath);
-            writeln("Members: ", imp.members);
-          }
-        }
-
-        if (moduleObject.includes)
-        {
-          foreach (inc; moduleObject.includes)
-          {
-            writeln("Include: ", inc.headerPath);
-          }
-        }
-
-        if (moduleObject.internalFunctions)
-        {
-          foreach (fn; moduleObject.internalFunctions)
-          {
-            writeln("Internal Function: ", fn.name);
-            writeln("Definition: ", fn.definitionArguments);
-            writeln("Template Args:");
-
-            foreach (arg; fn.templateParameters)
-            {
-              writeln("Type: ", arg.type);
-              writeln("Name: ", arg.name);
-            }
-
-            writeln("Parameters:");
-
-            foreach (arg; fn.parameters)
-            {
-              writeln("Type: ", arg.type);
-              writeln("Name: ", arg.name);
-            }
-
-            writeln("---");
-          }
-        }
-
-        if (moduleObject.functions)
-        {
-          foreach (fn; moduleObject.functions)
-          {
-            writeln("Function: ", fn.name);
-            writeln("Definition: ", fn.definitionArguments);
-            writeln("Template Args:");
-
-            foreach (arg; fn.templateParameters)
-            {
-              writeln("Type: ", arg.type);
-              writeln("Name: ", arg.name);
-            }
-
-            writeln("Parameters:");
-
-            foreach (arg; fn.parameters)
-            {
-              writeln("Type: ", arg.type);
-              writeln("Name: ", arg.name);
-            }
-
-            if (fn.scopes)
-            {
-              writeln("Body:");
-
-              foreach (s; fn.scopes)
-              {
-                if (s.assignmentExpression)
-                {
-                  if (s.assignmentExpression.rightHandCall)
-                  {
-                    writefln("%s %s %s(%s)", s.assignmentExpression.leftHand, s.assignmentExpression.operator, s.assignmentExpression.rightHandCall.identifier, s.assignmentExpression.rightHandCall.parameters);
-                  }
-                  else
-                  {
-                    writefln("%s %s %s", s.assignmentExpression.leftHand, s.assignmentExpression.operator, s.assignmentExpression.rightHand);
-                  }
-                }
-                else if (s.functionCallExpression)
-                {
-                  writefln("%s(%s)", s.functionCallExpression.identifier, s.functionCallExpression.parameters);
-                }
-                else if (s.returnExpression)
-                {
-                  if (s.returnExpression.returnCall)
-                  {
-                    writefln("Return: %s(%s)", s.returnExpression.returnCall.identifier, s.returnExpression.returnCall.parameters);
-                  }
-                  else
-                  {
-                    writeln("Return: ", s.returnExpression.arguments);
-                  }
-                }
-              }
-            }
-
-            writeln("---");
-          }
-        }
+        printDebug("Wrote parser tree to file: parsertrees/parsertree_%s.json", moduleObject.name);
 
         modules ~= moduleObject;
       }
 
       if (hasErrors)
       {
-        return;
+        return [];
       }
 
       // CTFE etc.
 
-      if (hasErrors)
-      {
-        return;
-      }
-
-      // Semantic analysis
-
-      if (hasErrors)
-      {
-        return;
-      }
-
-      // Parse code to external soruce (ex. C)
-
-      if (hasErrors)
-      {
-        return;
-      }
-
-      // Compile code (ex. generated C code)
-
-      if (hasErrors)
-      {
-        return;
-      }
+      // if (hasErrors)
+      // {
+      //   return;
+      // }
     }
 
     if (directories && directories.length)
     {
       foreach (directory; directories)
       {
-        handle(directory);
+        modules ~= handle(directory);
       }
     }
   }
+
+  return modules;
 }

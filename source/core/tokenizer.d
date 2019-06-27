@@ -181,7 +181,7 @@ STRING[] tokenize(string content, bool includeComments)
       }
       else if (isSymbol(c))
       {
-        if (isSymbol(next) && c != '(' && c != '{' && c != ')' && c != '}' && next != '(' && next != '{' && next != ')' && next != '}')
+        if (isSymbol(next) && c != ',' && next != ',' && c != '(' && c != '{' && c != ')' && c != '}' && next != '(' && next != '{' && next != ')' && next != '}' && c != ']')
         {
           if (token && token.strip.length) tokens ~= token;
 
@@ -257,6 +257,9 @@ bool isSymbol(char c)
     case '#':
     case '$':
     case '@':
+    case '>':
+    case '<':
+    case '|':
       return true;
 
     default: return false;
