@@ -333,7 +333,7 @@ Token groupTokens(STRING[] tokens)
 
       combine ~= token;
     }
-    else if (next == ":" && (token.isAttribute || (currentToken.statement && currentToken.statement.length && currentToken.statement[0] == "@")))
+    else if (next == ":" && ((token.isAttribute && (!currentToken.statement || !currentToken.statement.length)) || (currentToken.statement && currentToken.statement.length && currentToken.statement[0] == "@")))
     {
       currentToken.statement ~= token;
       currentToken.statement ~= next;

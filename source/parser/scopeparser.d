@@ -17,6 +17,7 @@ import parser.tools;
 import parser.assignmentparser;
 import parser.functioncallparser;
 import parser.returnparser;
+import parser.variableparser;
 
 /// A scope object.
 class ScopeObject
@@ -27,6 +28,8 @@ class ScopeObject
   FunctionCallExpression functionCallExpression;
   /// The return expression of the scope.
   ReturnExpression returnExpression;
+  /// Variable declaration.
+  Variable variable;
   /// The line for the scope object.
   size_t line;
 }
@@ -110,7 +113,26 @@ ScopeObject[] parseScopes(Token scopeToken, string source, size_t line, string s
         {
           if (!printQueuedErrors())
           {
-            line.printError(source, "Invalid return statement: %s", token.statement && token.statement.length ? token.statement[0] : "");
+            line.printError(source, "Invalid return statement: %s", token.statement);
+          }
+        }
+        break;
+
+      case ParserType.VARIABLE:
+        auto variable = parseVariable(token, source);
+
+        if (variable)
+        {
+          scopeObject.variable = variable;
+          scopeObjects ~= scopeObject;
+
+          scopeObject = new ScopeObject;
+        }
+        else
+        {
+          if (!printQueuedErrors())
+          {
+            line.printError(source, "Invalid variable declaration: %s", token.statement);
           }
         }
         break;

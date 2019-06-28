@@ -18,6 +18,7 @@ import parser.importparser;
 import parser.includeparser;
 import parser.functionparser;
 import parser.attributeparser;
+import parser.variableparser;
 
 /// A module object.
 class ModuleObject
@@ -32,6 +33,8 @@ class ModuleObject
   FunctionObject[] internalFunctions;
   /// The functions of the module.
   FunctionObject[] functions;
+  /// The variables of the module.
+  Variable[] variables;
   /// The line of the module object.
   size_t line;
   /// The source of the module object.
@@ -161,6 +164,15 @@ ModuleObject parseModule(Token moduleToken, string source)
         if (attribute)
         {
           _attributes ~= attribute;
+        }
+        break;
+
+      case ParserType.VARIABLE:
+        auto variable = parseVariable(token, source);
+
+        if (variable)
+        {
+          moduleObject.variables ~= variable;
         }
         break;
 

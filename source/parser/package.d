@@ -24,4 +24,5 @@ public
   import parser.scopeparser;
   import parser.tools;
   import parser.typeinformationparser;
+  import parser.variableparser;
 }

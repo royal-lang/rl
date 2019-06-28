@@ -215,7 +215,7 @@ Expression parseRightHandExpression(string[] expression, string source, size_t l
       else line.printError(source, "Illegal symbol found in expression. Symbol: '%s'", token);
       return null;
     }
-    else if (!token.isQualifiedSymbol  && next == "(")
+    else if (!token.isQualifiedSymbol && next == "(")
     {
       if (last && last.length && !last.isQualifiedSymbol && token == "(")
       {
