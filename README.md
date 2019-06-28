@@ -62,9 +62,9 @@ fn main(string[]:const args)
   
 **-- Import Statement**: Done
 
-**-- Attributes**: In Progress
+**-- Attributes**: Done
 
-**-- Variable Declaration**: Not Started
+**-- Variable Declaration**: Done
 
 **-- Type Information**: Done
   
