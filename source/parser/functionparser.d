@@ -1,3 +1,10 @@
+/**
+* Module for parsing functions.
+*
+* License: MIT (https://github.com/bausslang/bl/blob/master/LICENSE)
+*
+* Copyright 2019 © bausslang - All Rights Reserved.
+*/
 module parser.functionparser;
 
 import core.tokenizer;
@@ -189,6 +196,8 @@ FunctionObject parseFunction(Token functionToken, string source)
     line.printError(source, "Missing '%s' from function declarationx.", ")");
     return null;
   }
+
+  // TODO: Clean up this mess for the parameter parser. Use a function.
 
   Parameter[] parametersObjects1 = [];
   Parameter[] parametersObjects2 = [];

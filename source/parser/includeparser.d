@@ -1,3 +1,10 @@
+/**
+* Module for parsing includes.
+*
+* License: MIT (https://github.com/bausslang/bl/blob/master/LICENSE)
+*
+* Copyright 2019 © bausslang - All Rights Reserved.
+*/
 module parser.includeparser;
 
 import core.tokenizer;

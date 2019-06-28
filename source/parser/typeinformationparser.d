@@ -1,3 +1,10 @@
+/**
+* Module for parsing type information.
+*
+* License: MIT (https://github.com/bausslang/bl/blob/master/LICENSE)
+*
+* Copyright 2019 © bausslang - All Rights Reserved.
+*/
 module parser.typeinformationparser;
 
 import core.tokenizer;
@@ -24,7 +31,6 @@ class TypeInformation
   string type;
   /// Boolean determining whether the type is an associative array.
   bool associativeArray;
-
   /// The type entries for array types.
   TypeEntry[] entries;
 }
