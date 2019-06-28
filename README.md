@@ -28,6 +28,22 @@ fn main()
 }
 ```
 
+```
+fn int main()
+{
+    ...
+
+    return 0;
+}
+```
+
+```
+fn main(string[]:const args)
+{
+    ...
+}
+```
+
 ---
 
 ### Current Status
