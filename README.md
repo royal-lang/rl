@@ -104,6 +104,8 @@ fn main(string[]:const args)
 
 **-- Static Constructors / Module Constructors**: Not Started
 
+**-- Unsafe Scopes**: Not Started
+
 **-- Lambdas**: Not Started
 
 **-- Templates**: Not Started
