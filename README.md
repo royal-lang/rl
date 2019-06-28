@@ -11,7 +11,7 @@ It will intiailly use a C compiler as the backend but will be abstract enough to
 
 The language should be as safe as possible, not just memory-wise.
 
-Memory safety will be attempted to be guaranteed with RAII, cleaning up when scopes end, ARC (Automatic Reference Counting), as well checking life-time of variables during compile-time checking for variables that might cause memory leaks etc. --
+Memory safety will be attempted to be guaranteed with RAII, cleaning up when scopes end, ARC (Automatic Reference Counting) (Avoided whenever possible.), as well compile-time validation using ownership rules similar to Rust. --
 
 Memory is partially manual (You don't need to use malloc() etc. as it's done under the hood.)
 
