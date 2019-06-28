@@ -11,7 +11,9 @@ It will intiailly use a C compiler as the backend but will be abstract enough to
 
 The language should be as safe as possible, not just memory-wise.
 
-Memory safety will be guaranteed with RAII, cleaning up when scopes end, as well check all variables set if they are cleaned somewhere in the code and emit errors when something has a possibility to leak memory.
+Memory safety will be attempted to be guaranteed with RAII, cleaning up when scopes end, ARC (Automatic Reference Counting) (Avoided whenever possible.), as well compile-time validation using ownership rules similar to Rust. --
+
+Memory is partially manual (You don't need to use malloc() etc. as it's done under the hood.)
 
 For memory critical sections manual memory management can be enabled but only in unsafe code which can only be called from unsafe scopes themselves, which limits unsafe functionality to a subset of the language.
 
@@ -50,7 +52,7 @@ fn main(string[]:const args)
 
 **Tokenization**: Done
 
-**Tokenized Grouping**: Done
+**Tokenized Grouping (Parse Tree Construction)**: Done
 
 **Parser**: In Progress
 
@@ -89,6 +91,30 @@ fn main(string[]:const args)
 **-- Foreach Statements**: Not Started
 
 **-- While Statements**: Not Started
+
+**-- Structs**: Not Started
+
+**-- Constructors**: Not Started
+  
+**-- Ref Structs**: Not Started
+
+**-- Interfaces**: Not Started
+
+**-- Traits**: Not Started
+
+**-- Static Constructors / Module Constructors**: Not Started
+
+**-- Unsafe Scopes**: Not Started
+
+**-- Lambdas**: Not Started
+
+**-- Templates**: Not Started
+
+**-- Mixins**: Not Started
+
+**-- Compile-time Conditionals**: Not Started
+
+**-- Contracts**: Not Started
   
 **CTFE**: Not Started
 
