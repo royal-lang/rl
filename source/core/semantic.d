@@ -7,8 +7,9 @@
 */
 module core.semantic;
 
-import core.parser;
 import core.errors;
+
+import parser;
 
 void analyzeSemantic(ModuleObject[string] modules)
 {

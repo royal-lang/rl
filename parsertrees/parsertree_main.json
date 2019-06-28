@@ -4,30 +4,12 @@
     "statement": ["module", "main", ";"],
     "tokens": []
   },{
-    "statement": ["import", "std.stdio", ":", "writeln", ";"],
-    "tokens": []
-  },{
-    "statement": ["fn", "int", "main", "(", "string", "[]", "args", ")"],
+    "statement": ["fn", "main", "(", "string", "[]", ":", "const", "args", ")"],
     "tokens": [{
         "statement": ["{"],
         "tokens": []
     },{
         "statement": ["writeln", "(", "\"Hello World!\"", ")", ";"],
-        "tokens": []
-    },{
-        "statement": ["return", "testReturnFunction", "(", ")", ";"],
-        "tokens": []
-    },{
-        "statement": ["}"],
-        "tokens": []
-    }]
-  },{
-    "statement": ["fn", "int", "testReturnFunction", "(", ")"],
-    "tokens": [{
-        "statement": ["{"],
-        "tokens": []
-    },{
-        "statement": ["return", "0", ";"],
         "tokens": []
     },{
         "statement": ["}"],

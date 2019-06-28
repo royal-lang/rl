@@ -11,6 +11,7 @@ import std.stdio : writeln, writefln, readln;
 
 import configuration;
 import core;
+import parser;
 
 private:
 

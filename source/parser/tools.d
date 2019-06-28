@@ -5,7 +5,7 @@
 *
 * Copyright 2019 © bausslang - All Rights Reserved.
 */
-module core.tools;
+module parser.tools;
 
 import std.container: SList,DList;
 import std.range : popFront;
@@ -18,6 +18,125 @@ private alias Queue = DList;
 import core.errors;
 
 public:
+
+/**
+* Checks whether a given string is a valid number.
+* Params:
+*   str = The string to validate.
+* Returns:
+*   True if the string is a valid number.
+*/
+bool isNumberValue(bool allowNegative, bool allowFloating)(string str)
+{
+  bool hasDot = false;
+
+  bool isNumberValueChar(char c, size_t index)
+  {
+    switch (c)
+    {
+      static if (allowFloating)
+      {
+        case '.':
+          if (!hasDot)
+          {
+            hasDot = true;
+            return index != 0;
+          }
+          return false;
+      }
+
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+        return true;
+
+      default:
+        return false;
+    }
+  }
+
+  foreach (i; 0 .. str.length)
+  {
+    auto c = str[i];
+
+    static if (allowNegative)
+    {
+      if (i == 0 && c == '-')
+      {
+        if (str.length == 1)
+        {
+          return false;
+        }
+
+        continue;
+      }
+    }
+
+    if (!isNumberValueChar(c, i))
+    {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
+* Splits a string using multiple delimeters.
+* Params:
+*   str = The string to split.
+*   delis = The delimeters to use for splitting in an AA controlling whether they should be kept or not.
+* Returns:
+*   An array of the entries splitted by the string.
+*/
+string[] splitMultiple(string str, bool[string] delis)
+{
+  string[] result = [];
+
+  string current = null;
+
+  foreach (c; str)
+  {
+    import std.conv : to;
+    import std.algorithm : canFind;
+
+    auto s = to!string(c);
+
+    if (s in delis)
+    {
+      if (current && current.length)
+      {
+        result ~= current;
+      }
+
+      if (delis.get(s, false))
+      {
+        result ~= s;
+      }
+
+      current = "";
+    }
+    else
+    {
+      current ~= s;
+    }
+  }
+
+  if (current)
+  {
+    result ~= current;
+  }
+
+  return result;
+}
+
 /**
 * Creates a shunting yard calculation set from a set of tokens.
 * Params:

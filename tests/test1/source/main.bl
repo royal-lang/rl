@@ -3,17 +3,7 @@
 */
 module main;
 
-import std.stdio : writeln;
-
-// main function.
-fn int main(string[] args)
+fn main(string[]:const args)
 {
   writeln("Hello World!");
-
-  return testReturnFunction();
-}
-
-fn int testReturnFunction()
-{
-  return 0;
 }

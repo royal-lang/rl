@@ -297,6 +297,8 @@ class Token
 */
 Token groupTokens(STRING[] tokens)
 {
+  import parser.meta : isAttribute;
+
   auto rootToken = new Token;
   auto currentToken = new Token(rootToken);
   currentToken.parent.tokens ~= currentToken;
@@ -306,8 +308,12 @@ Token groupTokens(STRING[] tokens)
   STRING combine;
   combine.s = "";
 
-  foreach (token; tokens)
+  foreach (ref i; 0 .. tokens.length)
   {
+    auto token = tokens[i];
+    auto last = i > 0 ? tokens[i - 1] : STRING("", 0);
+    auto next = i < (tokens.length - 1) ? tokens[i + 1] : STRING("", 0);
+
     if (token != "\"" && inString)
     {
       combine ~= token;
@@ -326,6 +332,16 @@ Token groupTokens(STRING[] tokens)
       inString = true;
 
       combine ~= token;
+    }
+    else if (next == ":" && (token.isAttribute || (currentToken.statement && currentToken.statement.length && currentToken.statement[0] == "@")))
+    {
+      currentToken.statement ~= token;
+      currentToken.statement ~= next;
+
+      currentToken = new Token(currentToken.parent);
+      currentToken.parent.tokens ~= currentToken;
+
+      i++;
     }
     else if (token == ";")
     {
