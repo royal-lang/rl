@@ -44,7 +44,7 @@ fn main()
 
 **-- Variable Declaration**: Not Started
 
-**-- Type Information**: Not Started
+**-- Type Information**: Done
   
 **-- Functions**: Done
 
