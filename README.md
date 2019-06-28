@@ -89,6 +89,28 @@ fn main(string[]:const args)
 **-- Foreach Statements**: Not Started
 
 **-- While Statements**: Not Started
+
+**-- Structs**: Not Started
+
+**-- Constructors**: Not Started
+  
+**-- Ref Structs**: Not Started
+
+**-- Interfaces**: Not Started
+
+**-- Traits**: Not Started
+
+**-- Static Constructors / Module Constructors**: Not Started
+
+**-- Lambdas**: Not Started
+
+**-- Templates**: Not Started
+
+**-- Mixins**: Not Started
+
+**-- Compile-time Conditionals**: Not Started
+
+**-- Contracts**: Not Started
   
 **CTFE**: Not Started
 
