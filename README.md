@@ -52,7 +52,7 @@ fn main(string[]:const args)
 
 **Tokenization**: Done
 
-**Tokenized Grouping**: Done
+**Tokenized Grouping (Parser-tree Construction)**: Done
 
 **Parser**: In Progress
 
