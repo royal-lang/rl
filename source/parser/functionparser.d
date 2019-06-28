@@ -16,6 +16,8 @@ import parser.tools;
 
 import parser.scopeparser;
 import parser.typeinformationparser;
+import parser.attributeparser;
+import parser.moduleparser;
 
 /// A function object.
 class FunctionObject
@@ -34,6 +36,8 @@ class FunctionObject
   size_t line;
   /// The return type information.
   TypeInformation returnTypeInformation;
+  /// Attributes tied to this function declaration.
+  AttributeObject[] attributes;
 }
 
 /// A parameter.
@@ -84,6 +88,8 @@ FunctionObject parseInternalFunction(Token functionToken, string source)
 */
 FunctionObject parseFunction(Token functionToken, string source)
 {
+  auto attributes = getAttributes();
+
   printDebug("Parsing function: %s", functionToken.statement);
 
   import std.array : join;
@@ -365,6 +371,8 @@ FunctionObject parseFunction(Token functionToken, string source)
       functionObject.scopes = scopeObjects.dup;
     }
   }
+
+  functionObject.attributes = attributes;
 
   printDebug("Finished parsing function.");
 

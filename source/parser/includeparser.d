@@ -14,6 +14,9 @@ import core.debugging;
 import parser.meta;
 import parser.tools;
 
+import parser.attributeparser;
+import parser.moduleparser;
+
 /// An import object.
 class IncludeObject
 {
@@ -21,6 +24,8 @@ class IncludeObject
   string headerPath;
   /// The line of the include object.
   size_t line;
+  /// Attributes tied to this function declaration.
+  AttributeObject[] attributes;
 }
 
 /**
@@ -34,6 +39,8 @@ class IncludeObject
 */
 IncludeObject parseInclude(Token token, string source, size_t line)
 {
+  auto attributes = getAttributes();
+
   printDebug("Parsing include: %s", token.statement);
 
   if (!token.statement || token.statement.length != 3)
@@ -65,6 +72,7 @@ IncludeObject parseInclude(Token token, string source, size_t line)
   auto includeObject = new IncludeObject;
   includeObject.headerPath = name[1 .. $-1];
   includeObject.line = line;
+  includeObject.attributes = attributes;
 
   printDebug("Finished parsing include ...");
 

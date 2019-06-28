@@ -17,6 +17,7 @@ import parser.tools;
 import parser.importparser;
 import parser.includeparser;
 import parser.functionparser;
+import parser.attributeparser;
 
 /// A module object.
 class ModuleObject
@@ -35,6 +36,26 @@ class ModuleObject
   size_t line;
   /// The source of the module object.
   string source;
+  /// Attributes tied to this function declaration.
+  AttributeObject[] attributes;
+}
+
+/// Collection of currently declared attributes for the module.
+private AttributeObject[] _attributes;
+
+/// Gets the current attributes that can be tied to the current declaration.
+AttributeObject[] getAttributes()
+{
+  if (!_attributes)
+  {
+    return null;
+  }
+
+  auto attributes = _attributes.dup;
+
+  _attributes = null;
+
+  return attributes;
 }
 
 /**
@@ -61,6 +82,8 @@ ModuleObject parseModule(Token moduleToken, string source)
     switch (token.getParserType)
     {
       case ParserType.MODULE:
+        auto attributes = getAttributes();
+
         printDebug("Parsing module statement: %s", token.statement);
 
         if (moduleObject.name)
@@ -92,6 +115,7 @@ ModuleObject parseModule(Token moduleToken, string source)
           }
 
           moduleObject.name = token.statement[1];
+          moduleObject.attributes = attributes;
         }
         break;
 
@@ -128,6 +152,15 @@ ModuleObject parseModule(Token moduleToken, string source)
         if (internalFunctionObject)
         {
           moduleObject.internalFunctions ~= internalFunctionObject;
+        }
+        break;
+
+      case ParserType.ATTRIBUTE:
+        auto attribute = parseAttribute(token, source);
+
+        if (attribute)
+        {
+          _attributes ~= attribute;
         }
         break;
 

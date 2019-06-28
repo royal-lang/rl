@@ -42,6 +42,13 @@ class AssignmentExpression
 */
 AssignmentExpression parseAssignmentExpression(Token token, string source, size_t line)
 {
+  import std.algorithm : countUntil;
+
+  if (token.statement.countUntil("(") == -1 || token.statement.countUntil(")") == -1)
+  {
+    clearQueuedErrors();
+  }
+
   printDebug("Parsing assignment expression or increment/decrement expression. Tokens: %s", token.statement);
 
   string[] leftHand = [];
@@ -97,6 +104,12 @@ AssignmentExpression parseAssignmentExpression(Token token, string source, size_
   if (!leftHand || !leftHand.length)
   {
     line.queueError(source, "Missing left-hand operation from expression.");
+    return null;
+  }
+
+  if (leftHand.length > 1)
+  {
+    line.queueError(source, "Too many left-hand operands.");
     return null;
   }
 

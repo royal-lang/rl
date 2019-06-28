@@ -14,6 +14,9 @@ import core.debugging;
 import parser.meta;
 import parser.tools;
 
+import parser.attributeparser;
+import parser.moduleparser;
+
 /// An import object.
 class ImportObject
 {
@@ -23,6 +26,8 @@ class ImportObject
   string[] members;
   /// The line of the import object.
   size_t line;
+  /// Attributes tied to this function declaration.
+  AttributeObject[] attributes;
 }
 
 /**
@@ -36,6 +41,8 @@ class ImportObject
 */
 ImportObject parseImport(Token token, string source, size_t line)
 {
+  auto attributes = getAttributes();
+
   printDebug("Parsing import: %s", token.statement);
 
   if (!token.statement || token.statement.length < 3)
@@ -90,6 +97,7 @@ ImportObject parseImport(Token token, string source, size_t line)
   importObject.modulePath = name;
   importObject.members = members.dup;
   importObject.line = line;
+  importObject.attributes = attributes;
 
   printDebug("Finished parsing import ...");
 

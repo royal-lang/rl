@@ -36,12 +36,26 @@ class FunctionCallExpression
 * Returns:
 *   The function call expression created.
 */
-FunctionCallExpression parseFunctionCallExpression(Token token, string source, size_t line)
+FunctionCallExpression parseFunctionCallExpression(Token token, string source, size_t line, bool skipEndCheck = false)
+{
+  return parseFunctionCallExpression(token.statement, source, line, skipEndCheck);
+}
+
+/**
+* Parses a function call expression.
+* Params:
+*   statement = The statement to parse.
+*   source = The source parsed from.
+*   line = The line parsed from.
+* Returns:
+*   The function call expression created.
+*/
+FunctionCallExpression parseFunctionCallExpression(STRING[] statement, string source, size_t line, bool skipEndCheck = false)
 {
   import std.algorithm : map;
   import std.array : array;
 
-  return parseFunctionCallExpression(token.statement.map!(s => s.s).array, source, line);
+  return parseFunctionCallExpression(statement.map!(s => s.s).array, source, line, skipEndCheck);
 }
 
 /**

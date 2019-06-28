@@ -11,6 +11,7 @@ public
 {
   import parser.arrayparser;
   import parser.assignmentparser;
+  import parser.attributeparser;
   import parser.defaulttypeparser;
   import parser.expressionparser;
   import parser.functioncallparser;
