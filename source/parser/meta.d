@@ -70,6 +70,8 @@ enum Keyword : string
   SWITCH = "switch",
   /// The case keyword.
   CASE = "case",
+  /// The final keyword.
+  FINAL = "final",
   /// The for keyword.
   FOR = "for",
   /// The foreach keyword.
@@ -253,6 +255,7 @@ bool isKeyword(string keyword)
     case Keyword.DEFAULT:
     case Keyword.SWITCH:
     case Keyword.CASE:
+    case Keyword.FINAL:
     case Keyword.FOR:
     case Keyword.FOREACH:
     case Keyword.WHILE:
@@ -347,7 +350,19 @@ enum ParserType
   /// The if parser type.
   IF,
   /// The else parser type.
-  ELSE
+  ELSE,
+  /// The switch parser type.
+  SWITCH,
+  /// The case parser type.
+  CASE,
+  /// The default parser type.
+  DEFAULT,
+  /// The final parser type.
+  FINAL,
+  /// The break parser type.
+  BREAK,
+  /// The continue parser type.
+  CONTINUE
 }
 
 /// Hash map of parser types.
@@ -385,6 +400,13 @@ static this()
 
   parserTypes[Keyword.IF] = ParserType.IF;
   parserTypes[Keyword.ELSE] = ParserType.ELSE;
+
+  parserTypes[Keyword.SWITCH] = ParserType.SWITCH;
+  parserTypes[Keyword.CASE] = ParserType.CASE;
+  parserTypes[Keyword.DEFAULT] = ParserType.DEFAULT;
+  parserTypes[Keyword.FINAL] = ParserType.FINAL;
+  parserTypes[Keyword.BREAK] = ParserType.BREAK;
+  parserTypes[Keyword.CONTINUE] = ParserType.CONTINUE;
 
   parserTypes[Keyword.VARIABLE] = ParserType.VARIABLE;
 

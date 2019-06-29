@@ -23,6 +23,7 @@ public
   import parser.moduleparser;
   import parser.returnparser;
   import parser.scopeparser;
+  import parser.switchparser;
   import parser.tools;
   import parser.typeinformationparser;
   import parser.variableparser;

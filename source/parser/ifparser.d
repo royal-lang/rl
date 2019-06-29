@@ -78,7 +78,7 @@ IfStatement parseIfStatement(Token token, string[] statement, string source, siz
 
   if (statement[0] != Keyword.IF)
   {
-    line.printError(source, "Exoected '%s' but found '%s'", cast(string)Keyword.IF, statement[0]);
+    line.printError(source, "Expected '%s' but found '%s'", cast(string)Keyword.IF, statement[0]);
     return null;
   }
 

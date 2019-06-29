@@ -19,6 +19,20 @@ import parser.functioncallparser;
 import parser.returnparser;
 import parser.variableparser;
 import parser.ifparser;
+import parser.switchparser;
+
+/// Enumeration of scope states.
+enum ScopeState
+{
+  /// Breaks out of current scope. Limited to certain scopes.
+  scopeBreak,
+  /// Returns from the function. Must have a ReturnExpression associated.
+  scopeReturn,
+  /// For loops scopes this will skip the current iteration and go to the next iteration.
+  scopeContinue,
+  /// For loop scopes this will break out of all nested scopes except for the outer-most scope.
+  scopeEnd
+}
 
 /// A scope object.
 class ScopeObject
@@ -33,6 +47,12 @@ class ScopeObject
   Variable variable;
   /// An if statement.
   IfStatement ifStatement;
+  /// An else statement.
+  ElseStatement elseStatement;
+  /// An else statement.
+  SwitchStatement switchStatement;
+  /// The state of the scope.
+  ScopeState scopeState;
   /// The line for the scope object.
   size_t line;
 }
@@ -45,10 +65,11 @@ class ScopeObject
 *   line = The line parsed from.
 *   scopeName = The name of the scope.
 *   sourceIdentifier = The identifier of the source. Ex. a function name.
+*   customScopeHandler = A custom scope handler to handle specific scope elements such as "break" which is only valid in certain scopes.
 * Returns:
 *   The scope objects created.
 */
-ScopeObject[] parseScopes(Token scopeToken, string source, size_t line, string scopeName, string sourceIdentifier)
+ScopeObject[] parseScopes(Token scopeToken, string source, size_t line, string scopeName, string sourceIdentifier, bool function(Token,size_t,ref ScopeObject) customScopeHandler = null)
 {
   printDebug("Parsing scope.");
 
@@ -110,6 +131,7 @@ ScopeObject[] parseScopes(Token scopeToken, string source, size_t line, string s
         if (returnExpression)
         {
           scopeObject.returnExpression = returnExpression;
+          scopeObject.scopeState = ScopeState.scopeReturn;
           scopeObjects ~= scopeObject;
 
           scopeObject = new ScopeObject;
@@ -144,17 +166,74 @@ ScopeObject[] parseScopes(Token scopeToken, string source, size_t line, string s
 
       case ParserType.IF:
         auto ifStatement = parseIfStatement(token, source);
+
+        if (ifStatement)
+        {
+          scopeObject.ifStatement = ifStatement;
+          scopeObjects ~= scopeObject;
+
+          scopeObject = new ScopeObject;
+        }
+        else
+        {
+          if (!printQueuedErrors())
+          {
+            line.printError(source, "Invalid if statement: %s", token.statement);
+          }
+        }
         break;
 
       case ParserType.ELSE:
-        auto ifStatement = parseElseStatement(token, source);
+        auto elseStatement = parseElseStatement(token, source);
+
+        if (elseStatement)
+        {
+          scopeObject.elseStatement = elseStatement;
+          scopeObjects ~= scopeObject;
+
+          scopeObject = new ScopeObject;
+        }
+        else
+        {
+          if (!printQueuedErrors())
+          {
+            line.printError(source, "Invalid else statement: %s", token.statement);
+          }
+        }
         break;
+
+        case ParserType.SWITCH:
+          auto switchStatement = parseSwitchStatement(token, source);
+
+          if (switchStatement)
+          {
+            scopeObject.switchStatement = switchStatement;
+            scopeObjects ~= scopeObject;
+
+            scopeObject = new ScopeObject;
+          }
+          else
+          {
+            if (!printQueuedErrors())
+            {
+              line.printError(source, "Invalid switch statement: %s", token.statement);
+            }
+          }
+          break;
 
       case ParserType.EMPTY: break;
 
       default:
         if (parserType != ParserType.UNKNOWN)
         {
+          if (customScopeHandler !is null && customScopeHandler(token,line,scopeObject))
+          {
+            scopeObjects ~= scopeObject;
+
+            scopeObject = new ScopeObject;
+            break;
+          }
+
           line.printError(source, "Invalid declaration for scope: %s", token.statement && token.statement.length ? token.statement[0] : "");
           break;
         }
