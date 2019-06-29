@@ -142,7 +142,7 @@ fn main(string[]:const args)
 
 **Compile Parsed C Code**: Not Started
 
-### What problems is Bausslang trying to solve?
+### What problems are Bausslang trying to solve?
 
 #### Memory-safety
 
