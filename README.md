@@ -144,12 +144,107 @@ fn main(string[]:const args)
 
 ### What problems is Bausslang trying to solve?
 
-* Memory-safety - Without barriers for learning or using the language and also without GC for all memory management.
-* Readability - Code has to be readable and not obscure. Anyone should be able to look at a piece of code without know a language and tell what the code do without knowing the underlying functionality of course.
-* Simplicity - Simplicity but also without removing modern paradigms and concepts, and also while still being an expressive language.
-* Strictness - There should be a certain strictness to the language that will forbid certain things that might be normal in other languages. This will be by design to avoid "bad code" practices. An example would be a call to a function passed as a parameter. By design Bausslang will *force* the user to define a variable that calls the function to pass and then passes that variable to the function. This makes code much more readable, easier to maintain and easier to debug. While such a restriction might seem like **too much** or borderline **insane** then it's one of the restrictions that will carry a positive effect in the long run.
-* Compile-time code generation and execution - Code should be able to be generated at compile-time but also executed as well. This is solved in some languages but often comes with limitations. Bausslang aims to have no restrictions on IO etc. allowing reading/writing files at compile-time etc.
-* Easy-to-learn - The language shouldn't have a steap learning curve and should be easy to adapt when coming from other languages such as C#, Java, C, C++, D etc.
-* Portability - Code written in Bausslang should be easily portable and maintainable even when having to compile to different platforms. Compile-time features such as the **version** keyword, static conditionals **static if**, **static switch** etc. will help  creating cross-platform code. The standard library should utilize this and build **standard** code around each platform's functionality to avoid users having to implement platform-dependent code.
-* Async / Concurrent / Networking / Web-based Programming - Bausslang should focus a lot on its networking domain and have networking concepts and web concepts built-in to its standard library. This includes but not limited to threading, concurrency, sockets, webclients, webservers, dom/xml/html manipulation, json etc.
-* Minimal compilation - Compiled executables etc. should be as minimal as possible to not waste space both in terms of physical memory but also virtual memory allocated by the compiled program.
+#### Memory-safety
+
+Bausslang aims to provide memory-safety without complexity that creates a barrier for learning and using the language, and also without using GC for all memory management. This will be done using different kind of techniques such as RAII, ownership, ARC (Automatic Reference Counting.)
+
+Depending on the data, scenario etc. different techniques will be applied automatically.
+
+Of course entirely manual memory management is possible too but only usable in **unsafe** scopes and functions, which can only be called from **unsafe** code itself unless the **unsafe** code is marked trusted.
+
+This allows for some memory safety guarantees but also with the ability to completely manage it yourself. (Which of course removes the safety.)
+
+#### Readability
+
+The syntax of Bausslang aims to be kept as clean as possible, while still being expressive. It should be easy for anyone to view at code written in the language and determine what the code does. A clean syntax assures that code looks less complex and makes it easier to understand.
+
+#### Simplicity
+
+There has to be simplicity but also without removing modern paradigms and concepts, and also while still being an expressive language.
+
+The simplicity is a mixture of implementing language features in user-friendly, innovative ways with a combination of Bausslang's syntax and keywords.
+
+#### Strictness
+
+Strictness is a necessity for safety in a language. These restrictions will make sure that users don't just blindly do certain things, forcing them to put thought into what they're doing. An example would be this:
+
+Not allowed:
+
+```d
+var fooResult = foo(bar(), baz(), boo());
+```
+
+Allowed:
+
+```d
+var barResult = bar();
+var bazResult = baz();
+var booResult = boo();
+var fooResult = foo(barResult, bazResult, booResult);
+```
+
+Not only does it look cleaner, it's also easier to maintain, debug and creates some sensibility to the code.
+
+#### Compile-time Code Generation / Compile-time Function Execution
+
+Code should be able to be generated at compile-time but also executed as well.
+
+This is solved in some languages but often comes with limitations. Bausslang aims to have no restrictions on IO etc. allowing reading/writing files at compile-time etc.
+
+Being able to perform IO at compile-time is useful for ex. webservers to implement compile-time view generations etc.
+
+The below code is okay in Bausslang but most languages with CTFE would rejected it because it performs IO.
+
+```d
+var directory = openDir("views", DirectoryMode.deep);
+
+foreach (file, directory.files)
+{
+    var name = "output/" ~ file.name ~ ".html";
+    var html = parseHtmlFromTemplate(file.content);
+    
+    write(name, html);
+}
+```
+
+This might indicate some security issues for some but there are some restrictions to it.
+
+You can only write/read relative to the project path, this means you can't just do:
+
+```d
+var directory = openDir("C:\\windows"); // Error: Can only perform IO relative to the project path.
+```
+
+Another restriction to IO at CTFE is that it can only be performed by modules within the project path, which means dependencies cannot perform IO. This makes sure malicious dependencies will not be able to do anything malicious.
+
+```d
+// Ex. if this was in a dependency of the project:
+
+var directory = openDir("C:\\windows"); // Error: Dependency 'DEPENDENCY NAME' attempted to perform IO.
+```
+
+The compiler will also tell the user which dependency attempted to perform IO which can help users know which dependencies are possibly malicious.
+
+You cannot call external code or internally marked functions (C functions) which means the CTFE subset is limited to Bausslang modules only that are available at compile-time ex. not already generated object code etc.
+
+#### Easy Learning Curve
+
+The language shouldn't have a steap learning curve and should be easy to adapt when coming from other languages such as C#, Java, C, C++, D etc.
+
+#### Portability / Cross-platform
+
+Code written in Bausslang should be easily portable and maintainable even when having to compile to different platforms.
+
+Compile-time features such as the **version** keyword, static conditionals **static if**, **static switch** etc. will help  creating cross-platform code.
+
+The standard library should utilize this and build **standard** code around each platform's functionality to avoid users having to implement platform-dependent code.
+
+The compiler itself should also be able to be shipped to multiple platforms. Although initially written on Windows and shipped for that. This will change in the future when it becomes more stable and actually **works**.
+
+#### Async / Concurrent / Networking / Web-based Programming
+
+Bausslang should focus a lot on its networking domain and have networking concepts and web concepts built-in to its standard library. This includes but not limited to threading, concurrency, sockets, webclients, webservers, dom/xml/html manipulation, json etc.
+
+#### Minimal Compilation
+
+Compiled executables etc. should be as minimal as possible to not waste space both in terms of physical memory but also virtual memory allocated by the compiled program.
