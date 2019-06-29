@@ -396,6 +396,11 @@ Token groupTokens(STRING[] tokens)
     }
     else if (token == "}")
     {
+      if (!currentToken.parent || !currentToken.parent.parent)
+      {
+        continue;
+      }
+      
       currentToken = new Token(currentToken.parent);
       currentToken.statement ~= token;
       currentToken.parent.tokens ~= currentToken;
