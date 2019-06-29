@@ -3,7 +3,9 @@ The primary frontend compiler for bausslang.
 
 ---
 
-Bausslang is a statically typed programming language created as a simple learning project using a recursive descent parser. The goal is to create a C-like programming language inspired by D, C#, Rust, Go, C and C++.
+Bausslang is a statically typed programming language created as a simple learning project using a recursive descent parser (along with other algorithms for parsing such as shunting yard for expressions.)
+
+The goal is to create a C-like programming language inspired by D, C#, Rust, Go, C and C++.
 
 Eventually the goal is to write the compiler in itself.
 
@@ -60,9 +62,9 @@ fn main(string[]:const args)
   
 **-- Import Statement**: Done
 
-**-- Attributes**: In Progress
+**-- Attributes**: Done
 
-**-- Variable Declaration**: Not Started
+**-- Variable Declaration**: Done
 
 **-- Type Information**: Done
   
