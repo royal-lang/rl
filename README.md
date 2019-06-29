@@ -102,7 +102,7 @@ fn main(string[]:const args)
 
 **-- If/Else/Else If Statements**: Done
 
-**-- Switch Statements**: In Progress
+**-- Switch Statements**: Done
 
 **-- For Statements**: Not Started
 
@@ -112,13 +112,13 @@ fn main(string[]:const args)
 
 **-- Structs**: Not Started
 
-**-- Constructors**: Not Started
+**---- Constructors**: Not Started
   
-**-- Ref Structs**: Not Started
+**---- Ref Structs**: Not Started
 
-**-- Interfaces**: Not Started
+**---- Interfaces**: Not Started
 
-**-- Traits**: Not Started
+**---- Traits**: Not Started
 
 **-- Static Constructors / Module Constructors**: Not Started
 
