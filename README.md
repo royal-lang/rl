@@ -23,6 +23,9 @@ For memory critical sections manual memory management can be enabled but only in
 
 ### Hello World!
 
+
+#### Raw
+
 ```d
 module main;
 
@@ -31,6 +34,15 @@ fn main()
   import std.stdio : writeln;
   
   writeln("Hello World!");
+}
+```
+
+#### Prefered
+
+```
+fn main()
+{
+    writeln("Hello World!");
 }
 ```
 
