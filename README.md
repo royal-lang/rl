@@ -104,7 +104,7 @@ fn main(string[]:const args)
 
 **-- Switch Statements**: Done
 
-**-- For Statements**: Not Started
+**-- For Statements**: In Progress
 
 **-- Foreach Statements**: Not Started
 
