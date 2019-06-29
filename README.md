@@ -37,7 +37,7 @@ fn main()
 }
 ```
 
-#### Prefered
+#### Preferred
 
 ```d
 fn main()
