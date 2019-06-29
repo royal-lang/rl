@@ -104,11 +104,21 @@ fn main(string[]:const args)
 
 **-- While Statements**: Not Started
 
+**-- Enums**: Not Started
+
+**-- Alias **: Not Started
+
+**-- Synchronization**: Not Started
+
+**-- While Statements**: Not Started
+
 **-- Structs**: Not Started
 
 **---- Constructors**: Not Started
   
 **---- Ref Structs**: Not Started
+
+**------ Virtual Functions**: Not Started
 
 **---- Interfaces**: Not Started
 
@@ -117,6 +127,10 @@ fn main(string[]:const args)
 **-- Static Constructors / Module Constructors**: Not Started
 
 **-- Unsafe Scopes**: Not Started
+
+**-- Exceptions**: Not Started
+
+**-- Delegates / Function Pointers**: Not Started
 
 **-- Lambdas**: Not Started
 
