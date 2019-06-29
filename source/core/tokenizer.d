@@ -70,9 +70,44 @@ STRING[] tokenize(string content, bool includeComments)
 
   foreach (ref i; 0 .. content.length)
   {
+    char findLast()
+    {
+      auto index = i - 1;
+      char l = '\0';
+
+      if (i > 0)
+      {
+        while (index > 0 && (l == '\0' || l.isWhite))
+        {
+          l = content[index];
+          index--;
+        }
+      }
+
+      return l;
+    }
+
+    char findNext()
+    {
+      auto index = i + 1;
+      char n = '\0';
+
+      if (i < (content.length - 1))
+      {
+        while (index < (content.length - 1)  && (n == '\0' || n.isWhite))
+        {
+          n = content[index];
+
+          index++;
+        }
+      }
+
+      return n;
+    }
+
     char c = content[i];
-    char last = i > 0 ? content[i - 1] : '\0';
-    char next = i < (content.length - 1) ? content[i + 1] : '\0';
+    char last = findLast();
+    char next = findNext();
 
     if (c == '\r' && !isInString)
     {
@@ -179,7 +214,7 @@ STRING[] tokenize(string content, bool includeComments)
         tokens ~= token;
         token = "";
       }
-      else if (isSymbol(c))
+      else if (isSymbol(c) || (last == ')' && c == '.'))
       {
         if (isSymbol(next) && c != ',' && next != ',' && c != '(' && c != '{' && c != ')' && c != '}' && next != '(' && next != '{' && next != ')' && next != '}' && c != ']')
         {
