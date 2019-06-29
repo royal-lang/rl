@@ -23,7 +23,7 @@ For memory critical sections manual memory management can be enabled but only in
 
 ### Hello World!
 
-```
+```d
 module main;
 
 fn main()
@@ -34,7 +34,7 @@ fn main()
 }
 ```
 
-```
+```d
 fn int main()
 {
     ...
@@ -43,7 +43,7 @@ fn int main()
 }
 ```
 
-```
+```d
 fn main(string[]:const args)
 {
     ...
