@@ -88,7 +88,7 @@ fn main(string[]:const args)
 
 **-- If/Else/Else If Statements**: Done
 
-**-- Switch Statements**: Not Started
+**-- Switch Statements**: In Progress
 
 **-- For Statements**: Not Started
 
