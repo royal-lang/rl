@@ -86,7 +86,7 @@ fn main(string[]:const args)
 
 **---- Chained Function Calls**: Done
 
-**-- If/Else/Else If Statements**: Not Started
+**-- If/Else/Else If Statements**: Done
 
 **-- Switch Statements**: Not Started
 
