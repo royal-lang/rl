@@ -141,3 +141,14 @@ fn main(string[]:const args)
 **Parse Code To C**: Not Started
 
 **Compile Parsed C Code**: Not Started
+
+### What problems is Bausslang trying to solve?
+
+* Memory-safety - Without barriers for learning or using the language and also without GC for all memory management.
+* Readability - Code has to be readable and not obscure. Anyone should be able to look at a piece of code without know a language and tell what the code do without knowing the underlying functionality of course.
+* Simplicity - Simplicity but also without removing modern paradigms and concepts.
+* Compile-time code generation and execution - Code should be able to be generated at compile-time but also executed as well. This is solved in some languages but often comes with limitations. Bausslang aims to have no restrictions on IO etc. allowing reading/writing files at compile-time etc.
+* Easy-to-learn - The language shouldn't have a steap learning curve and should be easy to adapt when coming from other languages such as C#, Java, C, C++, D etc.
+* Portability - Code written in Bausslang should be easily portable and maintainable even when having to compile to different platforms. Compile-time features such as the **version** keyword, static conditionals **static if**, **static switch** etc. will help  creating cross-platform code. The standard library should utilize this and build **standard** code around each platform's functionality to avoid users having to implement platform-dependent code.
+* Async / Concurrent / Networking / Web-based Programming - Bausslang should focus a lot on its networking domain and have networking concepts and web concepts built-in to its standard library. This includes but not limited to threading, concurrency, sockets, webclients, webservers, dom/xml/html manipulation, json etc.
+* Minimal compilation - Compiled executables etc. should be as minimal as possible to not waste space both in terms of physical memory but also virtual memory allocated by the compiled program.
