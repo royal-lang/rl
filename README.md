@@ -39,7 +39,7 @@ fn main()
 
 #### Prefered
 
-```
+```d
 fn main()
 {
     writeln("Hello World!");
