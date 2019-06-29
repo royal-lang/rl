@@ -140,6 +140,8 @@ fn main(string[]:const args)
 
 **-- Compile-time Conditionals**: Not Started
 
+**-- Compile-time Loops**: Not Started
+
 **-- Contracts**: Not Started
   
 **CTFE**: Not Started
