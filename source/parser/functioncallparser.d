@@ -14,17 +14,30 @@ import core.debugging;
 import parser.meta;
 import parser.tools;
 
+import parser.arrayparser;
+
 /// A function call expression.
 class FunctionCallExpression
 {
   /// The identifier of the function call.
   string identifier;
   /// The parameters passed to the function call.
-  string[] templateParameters;
+  FunctionCallParameter[] templateParameters;
   /// The parameters passed to the function call.
-  string[] parameters;
+  FunctionCallParameter[] parameters;
+  /// The chain of calls originated from this call.
+  FunctionCallExpression[] chain;
   /// The line of the function call expression.
   size_t line;
+}
+
+/// A function call parameter.
+class FunctionCallParameter
+{
+  /// An array expression parameter.
+  ArrayExpression arrayExpression;
+  /// A raw parameter.
+  string rawParameter;
 }
 
 /**
@@ -36,9 +49,9 @@ class FunctionCallExpression
 * Returns:
 *   The function call expression created.
 */
-FunctionCallExpression parseFunctionCallExpression(Token token, string source, size_t line, bool skipEndCheck = false)
+FunctionCallExpression parseFunctionCallExpression(Token token, string source, size_t line, bool skipEndCheck = false, bool chainedCallsAllowed = true)
 {
-  return parseFunctionCallExpression(token.statement, source, line, skipEndCheck);
+  return parseFunctionCallExpression(token.statement, source, line, skipEndCheck, chainedCallsAllowed);
 }
 
 /**
@@ -50,12 +63,12 @@ FunctionCallExpression parseFunctionCallExpression(Token token, string source, s
 * Returns:
 *   The function call expression created.
 */
-FunctionCallExpression parseFunctionCallExpression(STRING[] statement, string source, size_t line, bool skipEndCheck = false)
+FunctionCallExpression parseFunctionCallExpression(STRING[] statement, string source, size_t line, bool skipEndCheck = false, bool chainedCallsAllowed = true)
 {
   import std.algorithm : map;
   import std.array : array;
 
-  return parseFunctionCallExpression(statement.map!(s => s.s).array, source, line, skipEndCheck);
+  return parseFunctionCallExpression(statement.map!(s => s.s).array, source, line, skipEndCheck, chainedCallsAllowed);
 }
 
 /**
@@ -67,15 +80,17 @@ FunctionCallExpression parseFunctionCallExpression(STRING[] statement, string so
 * Returns:
 *   The function call expression created.
 */
-FunctionCallExpression parseFunctionCallExpression(string[] statement, string source, size_t line, bool skipEndCheck = false)
+FunctionCallExpression parseFunctionCallExpression(string[] statement, string source, size_t line, bool skipEndCheck = false, bool chainedCallsAllowed = true, bool isChainedCall = false)
 {
   printDebug("Parsing function call: %s", statement);
-
   statement = statement.dup;
 
   import std.array : join;
 
-  clearQueuedErrors();
+  if (!isChainedCall)
+  {
+    clearQueuedErrors();
+  }
 
   if (skipEndCheck)
   {
@@ -95,6 +110,57 @@ FunctionCallExpression parseFunctionCallExpression(string[] statement, string so
   {
     return null;
   }
+
+  if (chainedCallsAllowed)
+  {
+    string[][] chainedStatements;
+
+    string[] currentStatement;
+
+    foreach (i; 0 .. statement.length)
+    {
+      auto entry = statement[i];
+      auto lastEntry = i > 1 ? statement[i - 1] : "";
+
+      if (entry == "." && lastEntry == ")")
+      {
+        currentStatement ~= ";";
+        chainedStatements ~= currentStatement;
+        currentStatement = [];
+      }
+      else
+      {
+        currentStatement ~= entry;
+      }
+    }
+
+    if (currentStatement)
+    {
+      chainedStatements ~= currentStatement;
+    }
+
+    if (chainedStatements && chainedStatements.length > 1)
+    {
+      FunctionCallExpression rootCall;
+
+      foreach (chainedStatement; chainedStatements)
+      {
+        auto call = parseFunctionCallExpression(chainedStatement, source, line, false, false, true);
+
+        if (!rootCall)
+        {
+          rootCall = call;
+        }
+        else
+        {
+          rootCall.chain ~= call;
+        }
+      }
+
+      return rootCall;
+    }
+  }
+
 
   if (statement[1] != "(")
   {
@@ -236,14 +302,74 @@ FunctionCallExpression parseFunctionCallExpression(string[] statement, string so
     values = [];
   }
 
-  if (parameters1 && parameters1.length && parameters2)
+  FunctionCallParameter[] callParameters1;
+
+  if (parameters1 && parameters1.length)
   {
-    functionCallExpression.parameters = parameters2;
-    functionCallExpression.templateParameters = parameters1;
+    foreach (param; parameters1)
+    {
+      auto callParameter = new FunctionCallParameter;
+      callParameter.rawParameter = param;
+
+      if (param[0] == '[')
+      {
+        auto arrayTokens = tokenize(param ~ ";", false);
+        auto arrayToken = groupTokens(arrayTokens);
+
+        auto arrayExpression = parseArrayExpression(arrayToken.tokens[0].statement, source, line, true);
+
+        if (arrayExpression)
+        {
+          callParameter.arrayExpression = arrayExpression;
+        }
+        else
+        {
+          return null;
+        }
+      }
+
+      callParameters1 ~= callParameter;
+    }
+  }
+
+  FunctionCallParameter[] callParameters2;
+
+  if (parameters1 && parameters1.length)
+  {
+    foreach (param; parameters1)
+    {
+      auto callParameter = new FunctionCallParameter;
+      callParameter.rawParameter = param;
+
+      if (param[0] == '[')
+      {
+        auto arrayTokens = tokenize(param ~ ";", false);
+        auto arrayToken = groupTokens(arrayTokens);
+
+        auto arrayExpression = parseArrayExpression(arrayToken.tokens[0].statement, source, line, true);
+
+        if (arrayExpression)
+        {
+          callParameter.arrayExpression = arrayExpression;
+        }
+        else
+        {
+          return null;
+        }
+      }
+
+      callParameters2 ~= callParameter;
+    }
+  }
+
+  if (callParameters1 && callParameters1.length && callParameters2)
+  {
+    functionCallExpression.parameters = callParameters2;
+    functionCallExpression.templateParameters = callParameters1;
   }
   else
   {
-    functionCallExpression.parameters = parameters1;
+    functionCallExpression.parameters = callParameters1;
   }
 
   return functionCallExpression;

@@ -42,6 +42,24 @@ class ArrayValue
 * Returns:
 *   Returns an array expression if parsed correctly, null otherwise.
 */
+ArrayExpression parseArrayExpression(STRING[] statement, string source, size_t line, bool queueErrors)
+{
+  import std.algorithm : map;
+  import std.array : array;
+
+  return parseArrayExpression(statement.map!(s => s.s).array, source, line, queueErrors);
+}
+
+/**
+* Parses an array expression.
+* Params:
+*   tokens = The tokens of the array expression.
+*   source = The source of the array expression.
+*   line = The line of the array expression.
+*   queueErrors = Boolean determining whether errors should be printed directly or queued.
+* Returns:
+*   Returns an array expression if parsed correctly, null otherwise.
+*/
 ArrayExpression parseArrayExpression(string[] tokens, string source, size_t line, bool queueErrors)
 {
   clearQueuedErrors();
