@@ -16,6 +16,7 @@ public
   import parser.expressionparser;
   import parser.functioncallparser;
   import parser.functionparser;
+  import parser.ifparser;
   import parser.importparser;
   import parser.includeparser;
   import parser.meta;

@@ -343,7 +343,11 @@ enum ParserType
   /// The attribute parser type.
   ATTRIBUTE,
   /// The return parser type.
-  RETURN
+  RETURN,
+  /// The if parser type.
+  IF,
+  /// The else parser type.
+  ELSE
 }
 
 /// Hash map of parser types.
@@ -378,6 +382,9 @@ static this()
 
   parserTypes[Keyword.STATIC ~ Keyword.IF] = ParserType.STATIC_IF;
   parserTypes[Keyword.STATIC ~ Keyword.ELSE] = ParserType.STATIC_ELSE;
+
+  parserTypes[Keyword.IF] = ParserType.IF;
+  parserTypes[Keyword.ELSE] = ParserType.ELSE;
 
   parserTypes[Keyword.VARIABLE] = ParserType.VARIABLE;
 

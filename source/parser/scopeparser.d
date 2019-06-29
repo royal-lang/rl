@@ -18,6 +18,7 @@ import parser.assignmentparser;
 import parser.functioncallparser;
 import parser.returnparser;
 import parser.variableparser;
+import parser.ifparser;
 
 /// A scope object.
 class ScopeObject
@@ -30,6 +31,8 @@ class ScopeObject
   ReturnExpression returnExpression;
   /// Variable declaration.
   Variable variable;
+  /// An if statement.
+  IfStatement ifStatement;
   /// The line for the scope object.
   size_t line;
 }
@@ -97,7 +100,9 @@ ScopeObject[] parseScopes(Token scopeToken, string source, size_t line, string s
     line = token.retrieveLine;
     scopeObject.line = line;
 
-    switch (token.getParserType)
+    auto parserType = token.getParserType;
+
+    switch (parserType)
     {
       case ParserType.RETURN:
         auto returnExpression = parseReturnExpression(token, source, line);
@@ -137,9 +142,23 @@ ScopeObject[] parseScopes(Token scopeToken, string source, size_t line, string s
         }
         break;
 
+      case ParserType.IF:
+        auto ifStatement = parseIfStatement(token, source);
+        break;
+
+      case ParserType.ELSE:
+        auto ifStatement = parseElseStatement(token, source);
+        break;
+
       case ParserType.EMPTY: break;
 
       default:
+        if (parserType != ParserType.UNKNOWN)
+        {
+          line.printError(source, "Invalid declaration for scope: %s", token.statement && token.statement.length ? token.statement[0] : "");
+          break;
+        }
+
         auto functionCallExpression = parseFunctionCallExpression(token, source, line);
 
         if (functionCallExpression)
