@@ -82,7 +82,7 @@ fn main(string[]:const args)
 
 **-- Function Calls**: Done
 
-**---- Chained Function Calls**: Not Started
+**---- Chained Function Calls**: Done
 
 **-- If/Else/Else If Statements**: Not Started
 
