@@ -146,7 +146,7 @@ fn main(string[]:const args)
 
 * Memory-safety - Without barriers for learning or using the language and also without GC for all memory management.
 * Readability - Code has to be readable and not obscure. Anyone should be able to look at a piece of code without know a language and tell what the code do without knowing the underlying functionality of course.
-* Simplicity - Simplicity but also without removing modern paradigms and concepts.
+* Simplicity - Simplicity but also without removing modern paradigms and concepts, and also while still being an expressive language.
 * Compile-time code generation and execution - Code should be able to be generated at compile-time but also executed as well. This is solved in some languages but often comes with limitations. Bausslang aims to have no restrictions on IO etc. allowing reading/writing files at compile-time etc.
 * Easy-to-learn - The language shouldn't have a steap learning curve and should be easy to adapt when coming from other languages such as C#, Java, C, C++, D etc.
 * Portability - Code written in Bausslang should be easily portable and maintainable even when having to compile to different platforms. Compile-time features such as the **version** keyword, static conditionals **static if**, **static switch** etc. will help  creating cross-platform code. The standard library should utilize this and build **standard** code around each platform's functionality to avoid users having to implement platform-dependent code.
