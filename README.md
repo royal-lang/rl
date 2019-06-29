@@ -106,7 +106,7 @@ fn main(string[]:const args)
 
 **-- Enums**: Not Started
 
-**-- Alias **: Not Started
+**-- Alias**: Not Started
 
 **-- Synchronization**: Not Started
 
