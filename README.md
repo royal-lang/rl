@@ -46,6 +46,8 @@ fn main()
 }
 ```
 
+### Main Function Examples
+
 ```d
 fn int main()
 {
