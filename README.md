@@ -110,8 +110,6 @@ fn main(string[]:const args)
 
 **-- Synchronization**: Not Started
 
-**-- While Statements**: Not Started
-
 **-- Structs**: Not Started
 
 **---- Constructors**: Not Started
