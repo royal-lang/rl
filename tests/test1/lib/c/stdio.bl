@@ -1,5 +1,0 @@
-module c.stdio;
-
-include "stdio.h";
-
-internal fn printf(string message);

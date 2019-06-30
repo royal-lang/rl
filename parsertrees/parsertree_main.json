@@ -9,8 +9,20 @@
         "statement": ["{"],
         "tokens": []
     },{
-        "statement": ["writeln", "(", "\"Hello World!\"", ")", ";"],
-        "tokens": []
+        "statement": ["for", "var", "i", "=", "0", ",", "i", "<", "10", ",", "i", "++"],
+        "tokens": [{
+            "statement": ["{"],
+            "tokens": []
+      },{
+            "statement": ["writeln", "(", "i", ")", ";"],
+            "tokens": []
+      },{
+            "statement": ["break", ";"],
+            "tokens": []
+      },{
+            "statement": ["}"],
+            "tokens": []
+      }]
     },{
         "statement": ["}"],
         "tokens": []

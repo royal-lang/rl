@@ -1,9 +1,9 @@
 /**
 * Module for file management during compuler configuration.
 *
-* License: MIT (https://github.com/bausslang/bl/blob/master/LICENSE)
+* License: MIT (https://github.com/Royal Programming Language/bl/blob/master/LICENSE)
 *
-* Copyright 2019 © bausslang - All Rights Reserved.
+* Copyright 2019 © Royal Programming Language - All Rights Reserved.
 */
 module configuration.files;
 
@@ -27,7 +27,7 @@ bool loadEntries(string directory, out string[] files, out string[] directories)
 
   foreach (string entryName; dirEntries(directory, SpanMode.shallow))
   {
-    if (isFile(entryName) && entryName.endsWith(".bl"))
+    if (isFile(entryName) && entryName.endsWith(".rl"))
     {
       files ~= entryName.replace("\\", "/");
     }

@@ -5,5 +5,9 @@ module main;
 
 fn main(string[]:const args)
 {
-  writeln("Hello World!");
+  for var i = 0, i < 10, i++
+  {
+    writeln(i);
+    break;
+  }
 }

@@ -1,9 +1,9 @@
 /**
 * Module for parsing default values. TODO: Handle this from semantics since it didn't really work during the parsing phase. I did an oopsie thinking that would work.
 *
-* License: MIT (https://github.com/bausslang/bl/blob/master/LICENSE)
+* License: MIT (https://github.com/Royal Programming Language/bl/blob/master/LICENSE)
 *
-* Copyright 2019 © bausslang - All Rights Reserved.
+* Copyright 2019 © Royal Programming Language - All Rights Reserved.
 */
 module parser.defaulttypeparser;
 

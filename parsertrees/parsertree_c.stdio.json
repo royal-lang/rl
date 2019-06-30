@@ -7,7 +7,25 @@
     "statement": ["include", "\"stdio.h\"", ";"],
     "tokens": []
   },{
-    "statement": ["fn", "printf", "(", "string", "message", ")", ";"],
+    "statement": ["alias", "CSTRING", "=", "ptr", ":", "byte", ";"],
     "tokens": []
+  },{
+    "statement": ["fn", "printf", "(", "CSTRING", "message", ")", ";"],
+    "tokens": []
+  },{
+    "statement": ["fn", "printf", "(", "string", ":", "const", "message", ")"],
+    "tokens": [{
+        "statement": ["{"],
+        "tokens": []
+    },{
+        "statement": ["var", "cstring", "=", "message.toStringz", "(", ")", ";"],
+        "tokens": []
+    },{
+        "statement": ["printf", "(", "cstring", ")", ";"],
+        "tokens": []
+    },{
+        "statement": ["}"],
+        "tokens": []
+    }]
   }]
 }

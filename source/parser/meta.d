@@ -1,9 +1,9 @@
 /**
 * Module for meta functionality usable during parsing etc.
 *
-* License: MIT (https://github.com/bausslang/bl/blob/master/LICENSE)
+* License: MIT (https://github.com/Royal Programming Language/bl/blob/master/LICENSE)
 *
-* Copyright 2019 © bausslang - All Rights Reserved.
+* Copyright 2019 © Royal Programming Language - All Rights Reserved.
 */
 module parser.meta;
 
@@ -362,7 +362,15 @@ enum ParserType
   /// The break parser type.
   BREAK,
   /// The continue parser type.
-  CONTINUE
+  CONTINUE,
+  /// The for parser type.
+  FOR,
+  /// The foreach parser type.
+  FOREACH,
+  /// The while parser type.
+  WHILE,
+  /// The do parser type.
+  DO
 }
 
 /// Hash map of parser types.
@@ -418,6 +426,11 @@ static this()
   parserTypes[Keyword.CONST] = ParserType.ATTRIBUTE;
   parserTypes[Keyword.MUT] = ParserType.ATTRIBUTE;
   parserTypes[Keyword.STATIC] = ParserType.ATTRIBUTE;
+
+  parserTypes[Keyword.FOR] = ParserType.FOR;
+  parserTypes[Keyword.FOREACH] = ParserType.FOREACH;
+  parserTypes[Keyword.WHILE] = ParserType.WHILE;
+  parserTypes[Keyword.DO] = ParserType.DO;
 
   parserTypes[Keyword.RETURN] = ParserType.RETURN;
 }
@@ -492,6 +505,13 @@ size_t retrieveLine(Token token)
   return line;
 }
 
+/**
+* Checks whether a given token is an attribute or not.
+* Params:
+*   token = The token to check.
+* Returns:
+*   True if the token is an attribute.
+*/
 bool isAttribute(string token)
 {
   if (!token || !token.length)
