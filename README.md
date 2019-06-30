@@ -1,9 +1,9 @@
-# bl
-The primary frontend compiler for bausslang.
+# rl
+The primary frontend compiler for Royal.
 
 ---
 
-Bausslang is a statically typed programming language created as a simple learning project using a recursive descent parser (along with other algorithms for parsing such as shunting yard for expressions.)
+Royal is a statically typed programming language created as a simple learning project using a recursive descent parser (along with other algorithms for parsing such as shunting yard for expressions.)
 
 The goal is to create a C-like programming language inspired by D, C#, Rust, Go, C and C++.
 
@@ -150,11 +150,11 @@ fn main(string[]:const args)
 
 **Compile Parsed C Code**: Not Started
 
-### What problems are Bausslang trying to solve?
+### What problems are Royal trying to solve?
 
 #### Memory-safety
 
-Bausslang aims to provide memory-safety without complexity that creates a barrier for learning and using the language, and also without using GC for all memory management. This will be done using different kind of techniques such as RAII, ownership, ARC (Automatic Reference Counting.)
+Royal aims to provide memory-safety without complexity that creates a barrier for learning and using the language, and also without using GC for all memory management. This will be done using different kind of techniques such as RAII, ownership, ARC (Automatic Reference Counting.)
 
 Depending on the data, scenario etc. different techniques will be applied automatically.
 
@@ -164,13 +164,13 @@ This allows for some memory safety guarantees but also with the ability to compl
 
 #### Readability
 
-The syntax of Bausslang aims to be kept as clean as possible, while still being expressive. It should be easy for anyone to view at code written in the language and determine what the code does. A clean syntax assures that code looks less complex and makes it easier to understand.
+The syntax of Royal aims to be kept as clean as possible, while still being expressive. It should be easy for anyone to view at code written in the language and determine what the code does. A clean syntax assures that code looks less complex and makes it easier to understand.
 
 #### Simplicity
 
 There has to be simplicity but also without removing modern paradigms and concepts, and also while still being an expressive language.
 
-The simplicity is a mixture of implementing language features in user-friendly, innovative ways with a combination of Bausslang's syntax and keywords.
+The simplicity is a mixture of implementing language features in user-friendly, innovative ways with a combination of Royal's syntax and keywords.
 
 #### Strictness
 
@@ -197,11 +197,11 @@ Not only does it look cleaner, it's also easier to maintain, debug and creates s
 
 Code should be able to be generated at compile-time but also executed as well.
 
-This is solved in some languages but often comes with limitations. Bausslang aims to have no restrictions on IO etc. allowing reading/writing files at compile-time etc.
+This is solved in some languages but often comes with limitations. Royal aims to have no restrictions on IO etc. allowing reading/writing files at compile-time etc.
 
 Being able to perform IO at compile-time is useful for ex. webservers to implement compile-time view generations etc.
 
-The below code is okay in Bausslang but most languages with CTFE would rejected it because it performs IO.
+The below code is okay in Royal but most languages with CTFE would rejected it because it performs IO.
 
 ```d
 var directory = openDir("views", DirectoryMode.deep);
@@ -233,7 +233,7 @@ var directory = openDir("C:\\windows"); // Error: Dependency 'DEPENDENCY NAME' a
 
 The compiler will also tell the user which dependency attempted to perform IO which can help users know which dependencies are possibly malicious.
 
-You cannot call external code or internally marked functions (C functions) which means the CTFE subset is limited to Bausslang modules only that are available at compile-time ex. not already generated object code etc.
+You cannot call external code or internally marked functions (C functions) which means the CTFE subset is limited to Royal modules only that are available at compile-time ex. not already generated object code etc.
 
 #### Easy Learning Curve
 
@@ -241,7 +241,7 @@ The language shouldn't have a steap learning curve and should be easy to adapt w
 
 #### Portability / Cross-platform
 
-Code written in Bausslang should be easily portable and maintainable even when having to compile to different platforms.
+Code written in Royal should be easily portable and maintainable even when having to compile to different platforms.
 
 Compile-time features such as the **version** keyword, static conditionals **static if**, **static switch** etc. will help  creating cross-platform code.
 
@@ -251,7 +251,7 @@ The compiler itself should also be able to be shipped to multiple platforms. Alt
 
 #### Async / Concurrent / Networking / Web-based Programming
 
-Bausslang should focus a lot on its networking domain and have networking concepts and web concepts built-in to its standard library. This includes but not limited to threading, concurrency, sockets, webclients, webservers, dom/xml/html manipulation, json etc.
+Royal should focus a lot on its networking domain and have networking concepts and web concepts built-in to its standard library. This includes but not limited to threading, concurrency, sockets, webclients, webservers, dom/xml/html manipulation, json etc.
 
 #### Minimal Compilation
 
