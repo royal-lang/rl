@@ -118,9 +118,9 @@ fn main(string[]:const args)
 
 **------ Virtual Functions**: Not Started
 
-**---- Interfaces**: Not Started
+**-- Interfaces**: Not Started
 
-**---- Traits**: Not Started
+**-- Traits**: Not Started
 
 **-- Synchronization**: Not Started
 
