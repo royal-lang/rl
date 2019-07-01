@@ -108,7 +108,7 @@ fn main(string[]:const args)
 
 **-- Alias**: Not Started
 
-**-- Synchronization**: Not Started
+**---- Properties**: Not Started
 
 **-- Structs**: Not Started
 
@@ -121,6 +121,8 @@ fn main(string[]:const args)
 **---- Interfaces**: Not Started
 
 **---- Traits**: Not Started
+
+**-- Synchronization**: Not Started
 
 **-- Static Constructors / Module Constructors**: Not Started
 
