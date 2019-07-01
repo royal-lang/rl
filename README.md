@@ -108,7 +108,7 @@ fn main(string[]:const args)
 
 **-- Alias**: Not Started
 
-**---- Properties**: Not Started
+**-- Properties**: Not Started
 
 **-- Structs**: Not Started
 
