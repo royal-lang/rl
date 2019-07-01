@@ -15,6 +15,10 @@ The language should be as safe as possible, not just memory-wise.
 
 ---
 
+Royal is still a WIP (Work In Progress) and currently it can't even compile and the parser is still being worked on.
+
+---
+
 ### Hello World!
 
 
