@@ -26,7 +26,7 @@ class ImportObject
   string[] members;
   /// The line of the import object.
   size_t line;
-  /// Attributes tied to this function declaration.
+  /// Attributes tied to this import declaration.
   AttributeObject[] attributes;
 }
 

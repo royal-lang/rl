@@ -105,9 +105,28 @@ STRING[] tokenize(string content, bool includeComments)
       return n;
     }
 
+    char findNextNext()
+    {
+      auto index = i + 2;
+      char n = '\0';
+
+      if (i < (content.length - 2))
+      {
+        while (index < (content.length - 2)  && (n == '\0' || n.isWhite))
+        {
+          n = content[index];
+
+          index++;
+        }
+      }
+
+      return n;
+    }
+
     char c = content[i];
     char last = findLast();
     char next = findNext();
+    char nextNext = findNextNext();
 
     if (c == '\r' && !isInString)
     {
@@ -216,7 +235,7 @@ STRING[] tokenize(string content, bool includeComments)
       }
       else if (isSymbol(c) || (last == ')' && c == '.'))
       {
-        if (isSymbol(next) && c != ',' && next != ',' && c != '(' && c != '{' && c != ')' && c != '}' && next != '(' && next != '{' && next != ')' && next != '}' && c != ']')
+        if ((next != '/' || nextNext != '/') && ((c == '|' && next == '|') || (isSymbol(next) && c != '|' && c != ',' && next != ',' && c != '(' && c != '{' && c != ')' && c != '}' && next != '(' && next != '{' && next != ')' && next != '}' && c != ']')))
         {
           if (token && token.strip.length) tokens ~= token;
 
@@ -400,7 +419,7 @@ Token groupTokens(STRING[] tokens)
       {
         continue;
       }
-      
+
       currentToken = new Token(currentToken.parent);
       currentToken.statement ~= token;
       currentToken.parent.tokens ~= currentToken;
