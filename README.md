@@ -102,15 +102,15 @@ fn main(string[]:const args)
 
 **-- Switch Statements**: Done
 
-**-- For Statements**: In Progress
+**-- For Statements**: Done
 
-**-- Foreach Statements**: Not Started
+**-- Foreach Statements**: In Progress
 
 **-- While Statements**: Not Started
 
 **-- Enums**: Not Started
 
-**-- Alias**: Not Started
+**-- Alias**: Done
 
 **-- Properties**: Not Started
 
