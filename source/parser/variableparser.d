@@ -36,19 +36,59 @@ class Variable
   AttributeObject[] attributes;
 }
 
+
+/**
+* Parses a variable.
+* Params:
+*   token = The token.
+*   source = The source.
+* Returns:
+*   The variable if parsed correctly, null otherwise.
+*/
 Variable parseVariable(Token token, string source)
+{
+  return parseVariable(token, token.statement, source);
+}
+
+/**
+* Parses a variable.
+* Params:
+*   token = The token.
+*   statement = The statement of the token.
+*   source = The source.
+* Returns:
+*   The variable if parsed correctly, null otherwise.
+*/
+Variable parseVariable(Token token, STRING[] statement, string source)
+{
+  import std.array : array;
+  import std.algorithm : map;
+
+  return parseVariable(token, statement.map!(s => s.s).array, source);
+}
+
+/**
+* Parses a variable.
+* Params:
+*   token = The token.
+*   tokenStatement = The statement of the token.
+*   source = The source.
+* Returns:
+*   The variable if parsed correctly, null otherwise.
+*/
+Variable parseVariable(Token token, string[] tokenStatement, string source)
 {
   auto attributes = getAttributes();
 
   size_t line = token.retrieveLine;
 
-  if (!token.statement || !token.statement.length)
+  if (!tokenStatement || !tokenStatement.length)
   {
     line.printError(source, "Missing variable declaration.");
     return null;
   }
 
-  auto statement = token.statement[1 .. $];
+  auto statement = tokenStatement[1 .. $];
 
   string[] leftHand = [];
   string operator;

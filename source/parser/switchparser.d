@@ -205,7 +205,11 @@ SwitchStatement parseSwitchStatement(Token token, string[] statement, string sou
       }
     }
 
-    auto scopeObjects = parseScopes(child, source, line, "case", "case", &handleCaseScope);
+    setGlobalScopeHandler("case", &handleCaseScope);
+
+    auto scopeObjects = parseScopes(child, source, line, "case", "case");
+
+    removeGlobalScopeHandler("case");
 
     if (scopeObjects && scopeObjects.length)
     {
@@ -240,7 +244,7 @@ bool handleCaseScope(Token token, size_t line, ref ScopeObject scopeObject)
       {
         return false;
       }
-      
+
       scopeObject.scopeState = ScopeState.scopeBreak;
       return true;
 

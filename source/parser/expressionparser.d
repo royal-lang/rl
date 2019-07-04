@@ -209,7 +209,7 @@ Expression parseRightHandExpression(string[] expression, string source, size_t l
         currentToken.tokens ~= token;
       }
     }
-    else if (token.isQualifiedSymbol && !token.isQualifiedExpressionSymbol(exp.isMathematicalExpression))
+    else if ((token.isQualifiedSymbol && (!last || !last.length) && token != "(" && token != ")") || token.isOperatorSymbol || (token.isQualifiedSymbol && !token.isQualifiedExpressionSymbol(exp.isMathematicalExpression)))
     {
       if (queueErrors) line.queueError(source, "Illegal symbol found in expression. Symbol: '%s'", token);
       else line.printError(source, "Illegal symbol found in expression. Symbol: '%s'", token);

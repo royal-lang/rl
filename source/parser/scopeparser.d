@@ -20,6 +20,7 @@ import parser.returnparser;
 import parser.variableparser;
 import parser.ifparser;
 import parser.switchparser;
+import parser.forparser;
 
 /// Enumeration of scope states.
 enum ScopeState
@@ -51,10 +52,63 @@ class ScopeObject
   ElseStatement elseStatement;
   /// An else statement.
   SwitchStatement switchStatement;
+  /// A for loop statement.
+  ForLoop forLoop;
   /// The state of the scope.
   ScopeState scopeState;
   /// The line for the scope object.
   size_t line;
+}
+
+private alias SCOPE_HANDLER = bool function(Token,size_t,ref ScopeObject);
+
+private class ScopeHandler
+{
+  SCOPE_HANDLER handler;
+  string name;
+  size_t counter;
+}
+
+private ScopeHandler[string] _globalScopeHandlers;
+
+void setGlobalScopeHandler(string name, SCOPE_HANDLER handler)
+{
+  auto scopeHandler = _globalScopeHandlers.get(name, null);
+
+  if (!scopeHandler)
+  {
+    scopeHandler = new ScopeHandler;
+    scopeHandler.handler = handler;
+    scopeHandler.name = name;
+    scopeHandler.counter = 1;
+    _globalScopeHandlers[name] = scopeHandler;
+  }
+  else
+  {
+    scopeHandler.counter += 1;
+  }
+}
+
+void removeGlobalScopeHandler(string name)
+{
+  if (!_globalScopeHandlers)
+  {
+    return;
+  }
+
+  auto scopeHandler = _globalScopeHandlers.get(name, null);
+
+  if (!scopeHandler)
+  {
+    return;
+  }
+
+  scopeHandler.counter -= 1;
+
+  if (!scopeHandler.counter)
+  {
+    _globalScopeHandlers.remove(name);
+  }
 }
 
 /**
@@ -202,24 +256,43 @@ ScopeObject[] parseScopes(Token scopeToken, string source, size_t line, string s
         }
         break;
 
-        case ParserType.SWITCH:
-          auto switchStatement = parseSwitchStatement(token, source);
+      case ParserType.SWITCH:
+        auto switchStatement = parseSwitchStatement(token, source);
 
-          if (switchStatement)
-          {
-            scopeObject.switchStatement = switchStatement;
-            scopeObjects ~= scopeObject;
+        if (switchStatement)
+        {
+          scopeObject.switchStatement = switchStatement;
+          scopeObjects ~= scopeObject;
 
-            scopeObject = new ScopeObject;
-          }
-          else
+          scopeObject = new ScopeObject;
+        }
+        else
+        {
+          if (!printQueuedErrors())
           {
-            if (!printQueuedErrors())
-            {
-              line.printError(source, "Invalid switch statement: %s", token.statement);
-            }
+            line.printError(source, "Invalid switch statement: %s", token.statement);
           }
-          break;
+        }
+        break;
+
+      case ParserType.FOR:
+        auto forLoop = parseForLoop(token, source);
+
+        if (forLoop)
+        {
+          scopeObject.forLoop = forLoop;
+          scopeObjects ~= scopeObject;
+
+          scopeObject = new ScopeObject;
+        }
+        else
+        {
+          if (!printQueuedErrors())
+          {
+            line.printError(source, "Invalid for statement: %s", token.statement);
+          }
+        }
+        break;
 
       case ParserType.EMPTY: break;
 
@@ -232,6 +305,27 @@ ScopeObject[] parseScopes(Token scopeToken, string source, size_t line, string s
 
             scopeObject = new ScopeObject;
             break;
+          }
+
+          if (_globalScopeHandlers && _globalScopeHandlers.length)
+          {
+            bool parsedScope;
+            foreach (scopeHandler; _globalScopeHandlers.values)
+            {
+              if (scopeHandler.handler !is null && scopeHandler.handler(token,line,scopeObject))
+              {
+                scopeObjects ~= scopeObject;
+
+                scopeObject = new ScopeObject;
+                parsedScope = true;
+                break;
+              }
+            }
+
+            if (parsedScope)
+            {
+              break;
+            }
           }
 
           line.printError(source, "Invalid declaration for scope: %s", token.statement && token.statement.length ? token.statement[0] : "");

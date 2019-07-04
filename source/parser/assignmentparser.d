@@ -34,7 +34,7 @@ class AssignmentExpression
 /**
 * Parses an assignment expression.
 * Params:
-*   token = The token of the function.
+*   token = The token of the assignment.
 *   source = The source parsed from.
 *   line = The line parsed from.
 * Returns:
@@ -42,20 +42,53 @@ class AssignmentExpression
 */
 AssignmentExpression parseAssignmentExpression(Token token, string source, size_t line)
 {
+  return parseAssignmentExpression(token, token.statement, source, line);
+}
+
+/**
+* Parses an assignment expression.
+* Params:
+*   token = The token of the assignment.
+*   statement = The statement of the token.
+*   source = The source parsed from.
+*   line = The line parsed from.
+* Returns:
+*   The assignment expression created.
+*/
+AssignmentExpression parseAssignmentExpression(Token token, STRING[] statement, string source, size_t line)
+{
+  import std.array : array;
+  import std.algorithm : map;
+
+  return parseAssignmentExpression(token, statement.map!(s => s.s).array, source, line);
+}
+
+/**
+* Parses an assignment expression.
+* Params:
+*   token = The token of the assignment.
+*   statement = The statement of the token.
+*   source = The source parsed from.
+*   line = The line parsed from.
+* Returns:
+*   The assignment expression created.
+*/
+AssignmentExpression parseAssignmentExpression(Token token, string[] statement, string source, size_t line)
+{
   import std.algorithm : countUntil;
 
-  if (token.statement.countUntil("(") == -1 || token.statement.countUntil(")") == -1)
+  if (statement.countUntil("(") == -1 || statement.countUntil(")") == -1)
   {
     clearQueuedErrors();
   }
 
-  printDebug("Parsing assignment expression or increment/decrement expression. Tokens: %s", token.statement);
+  printDebug("Parsing assignment expression or increment/decrement expression. Tokens: %s", statement);
 
   string[] leftHand = [];
   string operator = "";
   string[] rightHand = [];
 
-  foreach (entry; token.statement)
+  foreach (entry; statement)
   {
     if (!rightHand.length && (!operator || !operator.length) && entry.isOperatorSymbol)
     {
