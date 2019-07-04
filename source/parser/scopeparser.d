@@ -60,17 +60,28 @@ class ScopeObject
   size_t line;
 }
 
+/// Alias for a function pointer for scope handlers.
 private alias SCOPE_HANDLER = bool function(Token,size_t,ref ScopeObject);
 
+/// A scope handler.
 private class ScopeHandler
 {
+  /// The handler.
   SCOPE_HANDLER handler;
+  /// The name.
   string name;
+  /// The counter.
   size_t counter;
 }
 
+/// The global scope handlers.
 private ScopeHandler[string] _globalScopeHandlers;
 
+/**
+* Sets a global scope handler. (Remove to call removeGlobalScopeHandler())
+* Params:
+*   name = The name of the scope handler.
+*/
 void setGlobalScopeHandler(string name, SCOPE_HANDLER handler)
 {
   auto scopeHandler = _globalScopeHandlers.get(name, null);
@@ -89,6 +100,11 @@ void setGlobalScopeHandler(string name, SCOPE_HANDLER handler)
   }
 }
 
+/**
+* Removes a global scope handler.
+* Params:
+*   name = The name of the global scope handler to remove.
+*/
 void removeGlobalScopeHandler(string name)
 {
   if (!_globalScopeHandlers)
@@ -123,7 +139,7 @@ void removeGlobalScopeHandler(string name)
 * Returns:
 *   The scope objects created.
 */
-ScopeObject[] parseScopes(Token scopeToken, string source, size_t line, string scopeName, string sourceIdentifier, bool function(Token,size_t,ref ScopeObject) customScopeHandler = null)
+ScopeObject[] parseScopes(Token scopeToken, string source, size_t line, string scopeName, string sourceIdentifier, SCOPE_HANDLER customScopeHandler = null)
 {
   printDebug("Parsing scope.");
 
