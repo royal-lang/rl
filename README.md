@@ -15,6 +15,10 @@ The language should be as safe as possible, not just memory-wise.
 
 ---
 
+Royal is still a WIP (Work In Progress) and currently it can't even compile and the parser is still being worked on.
+
+---
+
 ### Hello World!
 
 
@@ -108,7 +112,7 @@ fn main(string[]:const args)
 
 **-- Alias**: Not Started
 
-**-- Synchronization**: Not Started
+**-- Properties**: Not Started
 
 **-- Structs**: Not Started
 
@@ -118,9 +122,11 @@ fn main(string[]:const args)
 
 **------ Virtual Functions**: Not Started
 
-**---- Interfaces**: Not Started
+**-- Interfaces**: Not Started
 
-**---- Traits**: Not Started
+**-- Traits**: Not Started
+
+**-- Synchronization**: Not Started
 
 **-- Static Constructors / Module Constructors**: Not Started
 
@@ -141,6 +147,8 @@ fn main(string[]:const args)
 **-- Compile-time Loops**: Not Started
 
 **-- Contracts**: Not Started
+
+**-- Unittests**: Not Started
   
 **CTFE**: Not Started
 
