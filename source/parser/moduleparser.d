@@ -19,6 +19,7 @@ import parser.includeparser;
 import parser.functionparser;
 import parser.attributeparser;
 import parser.variableparser;
+import parser.aliasparser;
 
 /// A module object.
 class ModuleObject
@@ -35,6 +36,8 @@ class ModuleObject
   FunctionObject[] functions;
   /// The variables of the module.
   Variable[] variables;
+  /// The alises of the module.
+  Alias[] aliases;
   /// The line of the module object.
   size_t line;
   /// The source of the module object.
@@ -173,6 +176,15 @@ ModuleObject parseModule(Token moduleToken, string source)
         if (variable)
         {
           moduleObject.variables ~= variable;
+        }
+        break;
+
+      case ParserType.ALIAS:
+        auto aliasObject = parseAlias(token, source);
+
+        if (aliasObject)
+        {
+          moduleObject.aliases ~= aliasObject;
         }
         break;
 

@@ -9,6 +9,7 @@ module parser;
 
 public
 {
+  import parser.aliasparser;
   import parser.arrayparser;
   import parser.assignmentparser;
   import parser.attributeparser;

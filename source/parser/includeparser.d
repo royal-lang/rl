@@ -24,7 +24,7 @@ class IncludeObject
   string headerPath;
   /// The line of the include object.
   size_t line;
-  /// Attributes tied to this function declaration.
+  /// Attributes tied to this include declaration.
   AttributeObject[] attributes;
 }
 
