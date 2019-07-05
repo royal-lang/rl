@@ -1,4 +1,7 @@
+![Royal](https://avatars2.githubusercontent.com/u/52180355?s=200&v=4)
+
 # rl
+
 The primary frontend compiler for Royal.
 
 ---
