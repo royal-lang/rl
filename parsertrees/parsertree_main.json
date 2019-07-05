@@ -9,15 +9,57 @@
         "statement": ["{"],
         "tokens": []
     },{
-        "statement": ["for", "var", "i", "=", "0", ",", "i", "<", "10", ",", "i", "++"],
+        "statement": ["var", "array", "=", "[", "1", ",", "2", ",", "3", "]", ";"],
+        "tokens": []
+    },{
+        "statement": ["foreach", "(", "item", ",", "array", ")"],
         "tokens": [{
             "statement": ["{"],
             "tokens": []
       },{
-            "statement": ["writeln", "(", "i", ")", ";"],
+            "statement": ["writeln", "(", "item", ")", ";"],
             "tokens": []
       },{
-            "statement": ["break", ";"],
+            "statement": ["}"],
+            "tokens": []
+      }]
+    },{
+        "statement": ["foreach", "(", "i", ",", "0", "..", "array.length", ")"],
+        "tokens": [{
+            "statement": ["{"],
+            "tokens": []
+      },{
+            "statement": ["var", "item", "=", "array.get", "(", "i", ")", ";"],
+            "tokens": []
+      },{
+            "statement": ["writeln", "(", "item", ")", ";"],
+            "tokens": []
+      },{
+            "statement": ["}"],
+            "tokens": []
+      }]
+    },{
+        "statement": ["var", "aa", "=", "[", "\"First Number\"", ":", "1", ",", "\"Second Item\"", ":", "2", "]", ";"],
+        "tokens": []
+    },{
+        "statement": ["foreach", "(", "k", ",", "v", ",", "aa", ")"],
+        "tokens": [{
+            "statement": ["{"],
+            "tokens": []
+      },{
+            "statement": ["writefln", "(", "\"Key: %s, Value: %d\"", ",", "k", ",", "v", ")", ";"],
+            "tokens": []
+      },{
+            "statement": ["}"],
+            "tokens": []
+      }]
+    },{
+        "statement": ["foreach", "(", "k", ",", "v", ",", "0", "..", "aa.length", ")"],
+        "tokens": [{
+            "statement": ["{"],
+            "tokens": []
+      },{
+            "statement": ["writefln", "(", "\"Key: %s, Value: %d\"", ",", "k", ",", "v", ")", ";"],
             "tokens": []
       },{
             "statement": ["}"],

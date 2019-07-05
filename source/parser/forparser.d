@@ -53,7 +53,14 @@ ForLoop parseForLoop(Token token, string source)
   string[] postExpression;
   size_t state = 1;
 
-  foreach (entry; token.statement[1 .. $])
+  auto statement = token.statement[1 .. $];
+
+  if (statement[0] == "(" && statement[$-1] == ")")
+  {
+    statement = statement[1 .. $-1];
+  }
+
+  foreach (entry; statement)
   {
     if (entry == ",")
     {

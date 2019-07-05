@@ -1,5 +1,5 @@
 /**
-* Module for error handling within the compiler.
+* Package for parser modules.
 *
 * License: MIT (https://github.com/Royal Programming Language/bl/blob/master/LICENSE)
 *
@@ -15,6 +15,7 @@ public
   import parser.attributeparser;
   import parser.defaulttypeparser;
   import parser.expressionparser;
+  import parser.foreachparser;
   import parser.forparser;
   import parser.functioncallparser;
   import parser.functionparser;

@@ -21,6 +21,7 @@ import parser.variableparser;
 import parser.ifparser;
 import parser.switchparser;
 import parser.forparser;
+import parser.foreachparser;
 
 /// Enumeration of scope states.
 enum ScopeState
@@ -54,6 +55,8 @@ class ScopeObject
   SwitchStatement switchStatement;
   /// A for loop statement.
   ForLoop forLoop;
+  /// A foreach loop statement.
+  ForeachLoop foreachLoop;
   /// The state of the scope.
   ScopeState scopeState;
   /// The line for the scope object.
@@ -82,7 +85,7 @@ private ScopeHandler[string] _globalScopeHandlers;
 * Params:
 *   name = The name of the scope handler.
 */
-void setGlobalScopeHandler(string name, SCOPE_HANDLER handler)
+void setGlobalScopeHandler(string name, lazy SCOPE_HANDLER handler)
 {
   auto scopeHandler = _globalScopeHandlers.get(name, null);
 
@@ -309,6 +312,25 @@ ScopeObject[] parseScopes(Token scopeToken, string source, size_t line, string s
           }
         }
         break;
+
+        case ParserType.FOREACH:
+          auto foreachLoop = parseForeachLoop(token, source);
+
+          if (foreachLoop)
+          {
+            scopeObject.foreachLoop = foreachLoop;
+            scopeObjects ~= scopeObject;
+
+            scopeObject = new ScopeObject;
+          }
+          else
+          {
+            if (!printQueuedErrors())
+            {
+              line.printError(source, "Invalid for statement: %s", token.statement);
+            }
+          }
+          break;
 
       case ParserType.EMPTY: break;
 

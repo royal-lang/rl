@@ -235,7 +235,7 @@ STRING[] tokenize(string content, bool includeComments)
       }
       else if (isSymbol(c) || (last == ')' && c == '.'))
       {
-        if ((next != '/' || nextNext != '/') && ((c == '|' && next == '|') || (isSymbol(next) && c != '|' && c != ',' && next != ',' && c != '(' && c != '{' && c != ')' && c != '}' && next != '(' && next != '{' && next != ')' && next != '}' && c != ']')))
+        if ((c != '=' || next == '=') && (next != '/' || nextNext != '/') && ((c == '|' && next == '|') || (isSymbol(next) && c != '|' && c != ',' && next != ',' && c != '(' && c != '{' && c != ')' && c != '}' && next != '(' && next != '{' && next != ')' && next != '}' && c != ']')))
         {
           if (token && token.strip.length) tokens ~= token;
 
