@@ -1,4 +1,7 @@
+![Royal](https://avatars2.githubusercontent.com/u/52180355?s=200&v=4)
+
 # rl
+
 The primary frontend compiler for Royal.
 
 ---
@@ -104,9 +107,9 @@ fn main(string[]:const args)
 
 **-- For Statements**: Done
 
-**-- Foreach Statements**: In Progress
+**-- Foreach Statements**: Done
 
-**-- While Statements**: Not Started
+**-- While Statements**: Done
 
 **-- Enums**: Not Started
 
