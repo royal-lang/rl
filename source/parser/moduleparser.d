@@ -36,7 +36,7 @@ class ModuleObject
   FunctionObject[] functions;
   /// The variables of the module.
   Variable[] variables;
-  /// The alises of the module.
+  /// The aliases of the module.
   Alias[] aliases;
   /// The line of the module object.
   size_t line;

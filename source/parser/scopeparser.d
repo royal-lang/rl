@@ -23,6 +23,10 @@ import parser.switchparser;
 import parser.forparser;
 import parser.foreachparser;
 import parser.whileparser;
+import parser.importparser;
+import parser.includeparser;
+import parser.functionparser;
+import parser.aliasparser;
 
 /// Enumeration of scope states.
 enum ScopeState
@@ -60,7 +64,17 @@ class ScopeObject
   ForeachLoop foreachLoop;
   /// A while loop statement.
   WhileLoop whileLoop;
-  /// The state of the scope.
+  /// An import.
+  ImportObject importObject;
+  // C header include.
+  IncludeObject includeObject;
+  /// An internal function.
+  FunctionObject internalFunctionObject;
+  /// A function.
+  FunctionObject functionObject;
+  /// An alias.
+  Alias aliasObject;
+  /// A state of the scope.
   ScopeState scopeState;
   /// Nested scopes.
   ScopeObject[] nestedScopes;
@@ -386,6 +400,101 @@ ScopeObject[] parseScopes(Token scopeToken, string source, size_t line, string s
             if (!printQueuedErrors())
             {
               line.printError(source, "Invalid foreach statement: %s", token.statement);
+            }
+          }
+          break;
+
+        case ParserType.IMPORT:
+          auto importObject = parseImport(token, source, line);
+
+          if (importObject)
+          {
+            scopeObject.importObject = importObject;
+            scopeObjects ~= scopeObject;
+
+            scopeObject = new ScopeObject;
+          }
+          else
+          {
+            if (!printQueuedErrors())
+            {
+              line.printError(source, "Invalid import statement: %s", token.statement);
+            }
+          }
+          break;
+
+        case ParserType.INCLUDE:
+            auto includeObject = parseInclude(token, source, line);
+
+            if (includeObject)
+            {
+              scopeObject.includeObject = includeObject;
+              scopeObjects ~= scopeObject;
+
+              scopeObject = new ScopeObject;
+            }
+            else
+            {
+              if (!printQueuedErrors())
+              {
+                line.printError(source, "Invalid include statement: %s", token.statement);
+              }
+            }
+            break;
+
+        case ParserType.FUNCTION:
+          auto functionObject = parseFunction(token, source);
+
+          if (functionObject)
+          {
+            scopeObject.functionObject = functionObject;
+            scopeObjects ~= scopeObject;
+
+            scopeObject = new ScopeObject;
+          }
+          else
+          {
+            if (!printQueuedErrors())
+            {
+              line.printError(source, "Invalid function statement: %s", token.statement);
+            }
+          }
+          break;
+
+        case ParserType.INTERNAL:
+          auto internalFunctionObject = parseInternalFunction(token, source);
+
+          if (internalFunctionObject)
+          {
+            scopeObject.internalFunctionObject = internalFunctionObject;
+            scopeObjects ~= scopeObject;
+
+            scopeObject = new ScopeObject;
+          }
+          else
+          {
+            if (!printQueuedErrors())
+            {
+              line.printError(source, "Invalid internal statement: %s", token.statement);
+            }
+          }
+          break;
+
+        case ParserType.ALIAS:
+          auto aliasObject = parseAlias(token, source);
+
+          if (aliasObject)
+          {
+            scopeObject.aliasObject = aliasObject;
+            scopeObjects ~= scopeObject;
+
+            scopeObject = new ScopeObject;
+          }
+          else
+          {
+            if (!printQueuedErrors())
+            {
+              line.printError(source, "Invalid alias statement: %s", token.statement);
             }
           }
           break;

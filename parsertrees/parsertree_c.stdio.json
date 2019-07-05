@@ -4,18 +4,18 @@
     "statement": ["module", "c.stdio", ";"],
     "tokens": []
   },{
-    "statement": ["include", "\"stdio.h\"", ";"],
-    "tokens": []
-  },{
-    "statement": ["alias", "CSTRING", "=", "ptr", ":", "byte", ";"],
-    "tokens": []
-  },{
-    "statement": ["fn", "printf", "(", "CSTRING", "message", ")", ";"],
-    "tokens": []
-  },{
     "statement": ["fn", "printf", "(", "string", ":", "const", "message", ")"],
     "tokens": [{
         "statement": ["{"],
+        "tokens": []
+    },{
+        "statement": ["include", "\"stdio.h\"", ";"],
+        "tokens": []
+    },{
+        "statement": ["alias", "CSTRING", "=", "ptr", ":", "byte", ";"],
+        "tokens": []
+    },{
+        "statement": ["fn", "printf", "(", "CSTRING", "message", ")", ";"],
         "tokens": []
     },{
         "statement": ["var", "cstring", "=", "message.toStringz", "(", ")", ";"],
