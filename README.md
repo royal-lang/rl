@@ -104,9 +104,9 @@ fn main(string[]:const args)
 
 **-- For Statements**: Done
 
-**-- Foreach Statements**: In Progress
+**-- Foreach Statements**: Done
 
-**-- While Statements**: Not Started
+**-- While Statements**: Done
 
 **-- Enums**: Not Started
 
