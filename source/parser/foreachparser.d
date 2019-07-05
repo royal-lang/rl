@@ -39,6 +39,8 @@ class ForeachLoop
 * Params:
 *   token = The token of the foreach loop.
 *   source = The source of the foreach loop.
+* Returns:
+*   Returns ture foreach loop if parsed correctly, null otherwise.
 */
 ForeachLoop parseForeachLoop(Token token, string source)
 {

@@ -5,28 +5,21 @@ module main;
 
 fn main(string[]:const args)
 {
-  var array = [1,2,3];
-  foreach (item, array)
+  var i = 0;
+
+  while i < 10
   {
-      writeln(item);
+    writeln(i);
+
+    i++;
   }
 
-  foreach (i, 0 .. array.length)
+  i = 0;
+
+  do
   {
-      var item = array.get(i);
+    writeln(i);
 
-      writeln(item);
-  }
-
-  var aa = ["First Number": 1, "Second Item": 2];
-
-  foreach (k,v, aa)
-  {
-      writefln("Key: %s, Value: %d", k, v);
-  }
-
-  foreach (k,v, 0 .. aa.length)
-  {
-      writefln("Key: %s, Value: %d", k, v);
-  }
+    i++;
+  } while i < 10;
 }

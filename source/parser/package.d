@@ -30,4 +30,5 @@ public
   import parser.tools;
   import parser.typeinformationparser;
   import parser.variableparser;
+  import parser.whileparser;
 }

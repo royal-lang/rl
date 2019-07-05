@@ -9,62 +9,44 @@
         "statement": ["{"],
         "tokens": []
     },{
-        "statement": ["var", "array", "=", "[", "1", ",", "2", ",", "3", "]", ";"],
+        "statement": ["var", "i", "=", "0", ";"],
         "tokens": []
     },{
-        "statement": ["foreach", "(", "item", ",", "array", ")"],
+        "statement": ["while", "i", "<", "10"],
         "tokens": [{
             "statement": ["{"],
             "tokens": []
       },{
-            "statement": ["writeln", "(", "item", ")", ";"],
+            "statement": ["writeln", "(", "i", ")", ";"],
+            "tokens": []
+      },{
+            "statement": ["i", "++", ";"],
             "tokens": []
       },{
             "statement": ["}"],
             "tokens": []
       }]
     },{
-        "statement": ["foreach", "(", "i", ",", "0", "..", "array.length", ")"],
-        "tokens": [{
-            "statement": ["{"],
-            "tokens": []
-      },{
-            "statement": ["var", "item", "=", "array.get", "(", "i", ")", ";"],
-            "tokens": []
-      },{
-            "statement": ["writeln", "(", "item", ")", ";"],
-            "tokens": []
-      },{
-            "statement": ["}"],
-            "tokens": []
-      }]
-    },{
-        "statement": ["var", "aa", "=", "[", "\"First Number\"", ":", "1", ",", "\"Second Item\"", ":", "2", "]", ";"],
+        "statement": ["i", "=", "0", ";"],
         "tokens": []
     },{
-        "statement": ["foreach", "(", "k", ",", "v", ",", "aa", ")"],
+        "statement": ["do"],
         "tokens": [{
             "statement": ["{"],
             "tokens": []
       },{
-            "statement": ["writefln", "(", "\"Key: %s, Value: %d\"", ",", "k", ",", "v", ")", ";"],
+            "statement": ["writeln", "(", "i", ")", ";"],
+            "tokens": []
+      },{
+            "statement": ["i", "++", ";"],
             "tokens": []
       },{
             "statement": ["}"],
             "tokens": []
       }]
     },{
-        "statement": ["foreach", "(", "k", ",", "v", ",", "0", "..", "aa.length", ")"],
-        "tokens": [{
-            "statement": ["{"],
-            "tokens": []
-      },{
-            "statement": ["writefln", "(", "\"Key: %s, Value: %d\"", ",", "k", ",", "v", ")", ";"],
-            "tokens": []
-      },{
-            "statement": ["}"],
-            "tokens": []
-      }]
+        "statement": ["while", "i", "<", "10", ";"],
+        "tokens": []
     },{
         "statement": ["}"],
         "tokens": []

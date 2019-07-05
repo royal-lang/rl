@@ -22,6 +22,7 @@ import parser.ifparser;
 import parser.switchparser;
 import parser.forparser;
 import parser.foreachparser;
+import parser.whileparser;
 
 /// Enumeration of scope states.
 enum ScopeState
@@ -57,8 +58,12 @@ class ScopeObject
   ForLoop forLoop;
   /// A foreach loop statement.
   ForeachLoop foreachLoop;
+  /// A while loop statement.
+  WhileLoop whileLoop;
   /// The state of the scope.
   ScopeState scopeState;
+  /// Nested scopes.
+  ScopeObject[] nestedScopes;
   /// The line for the scope object.
   size_t line;
 }
@@ -196,6 +201,30 @@ ScopeObject[] parseScopes(Token scopeToken, string source, size_t line, string s
 
     auto parserType = token.getParserType;
 
+    if (hasDoWhileLoop && parserType != ParserType.WHILE && parserType != ParserType.UNKNOWN && parserType != ParserType.EMPTY)
+    {
+      line.printError(source, "Missing while statement from do-while declaration.");
+      continue;
+    }
+
+    if (!token.statement || !token.statement.length)
+    {
+      if (token.tokens && token.tokens.length)
+      {
+        auto nestedScopeObjects = parseScopes(token, source, line, "scope", "scope");
+
+        if (nestedScopeObjects && nestedScopeObjects.length)
+        {
+          scopeObject.nestedScopes = nestedScopeObjects.dup;
+        }
+
+        scopeObjects ~= scopeObject;
+
+        scopeObject = new ScopeObject;
+        continue;
+      }
+    }
+
     switch (parserType)
     {
       case ParserType.RETURN:
@@ -327,7 +356,36 @@ ScopeObject[] parseScopes(Token scopeToken, string source, size_t line, string s
           {
             if (!printQueuedErrors())
             {
-              line.printError(source, "Invalid for statement: %s", token.statement);
+              line.printError(source, "Invalid foreach statement: %s", token.statement);
+            }
+          }
+          break;
+
+        case ParserType.DO:
+          if (!parseDoStatement(token, source))
+          {
+            if (!printQueuedErrors())
+            {
+              line.printError(source, "Invalid do-while statement: %s", token.statement);
+            }
+          }
+          break;
+
+        case ParserType.WHILE:
+          auto whileLoop = parseWhileLoop(token, source);
+
+          if (whileLoop)
+          {
+            scopeObject.whileLoop = whileLoop;
+            scopeObjects ~= scopeObject;
+
+            scopeObject = new ScopeObject;
+          }
+          else
+          {
+            if (!printQueuedErrors())
+            {
+              line.printError(source, "Invalid foreach statement: %s", token.statement);
             }
           }
           break;
