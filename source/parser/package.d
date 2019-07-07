@@ -14,6 +14,7 @@ public
   import parser.assignmentparser;
   import parser.attributeparser;
   import parser.defaulttypeparser;
+  import parser.enumparser;
   import parser.expressionparser;
   import parser.foreachparser;
   import parser.forparser;

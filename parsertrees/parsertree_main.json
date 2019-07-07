@@ -9,43 +9,49 @@
         "statement": ["{"],
         "tokens": []
     },{
-        "statement": ["var", "i", "=", "0", ";"],
-        "tokens": []
-    },{
-        "statement": ["while", "i", "<", "10"],
+        "statement": ["enum", "Color"],
         "tokens": [{
             "statement": ["{"],
             "tokens": []
       },{
-            "statement": ["writeln", "(", "i", ")", ";"],
+            "statement": ["red", "=", "0", ";"],
             "tokens": []
       },{
-            "statement": ["i", "++", ";"],
+            "statement": ["blue", "=", "1", ";"],
+            "tokens": []
+      },{
+            "statement": ["green", ";"],
             "tokens": []
       },{
             "statement": ["}"],
             "tokens": []
       }]
     },{
-        "statement": ["i", "=", "0", ";"],
-        "tokens": []
-    },{
-        "statement": ["do"],
+        "statement": ["enum", "Flag", ":", "ubyte"],
         "tokens": [{
             "statement": ["{"],
             "tokens": []
       },{
-            "statement": ["writeln", "(", "i", ")", ";"],
+            "statement": ["flag1", ";"],
             "tokens": []
       },{
-            "statement": ["i", "++", ";"],
+            "statement": ["flag2", "=", "4", ";"],
+            "tokens": []
+      },{
+            "statement": ["flag3", ";"],
             "tokens": []
       },{
             "statement": ["}"],
             "tokens": []
       }]
     },{
-        "statement": ["while", "i", "<", "10", ";"],
+        "statement": ["enum", "A", "=", "200", "*", "2", "+", "3", "+", "b", ";"],
+        "tokens": []
+    },{
+        "statement": ["enum", "B", "=", "A", "*", "20", ";"],
+        "tokens": []
+    },{
+        "statement": ["enum", "C", "=", "getC", "(", ")", ";"],
         "tokens": []
     },{
         "statement": ["}"],

@@ -87,7 +87,9 @@ enum Keyword : string
   /// The const keyword.
   CONST = "const",
   /// The mut keyword.
-  MUT = "mut"
+  MUT = "mut",
+  /// The enum keyword.
+  ENUM = "enum"
 }
 
 /**
@@ -264,6 +266,7 @@ bool isKeyword(string keyword)
     case Keyword.IMMUTABLE:
     case Keyword.CONST:
     case Keyword.MUT:
+    case Keyword.ENUM:
       return true;
 
     default: return keyword.isStandardTypeName;
@@ -297,6 +300,7 @@ bool isStandardTypeName(string typeName)
     typeName == "real" ||
     typeName == "void" ||
     typeName == "ptr" ||
+    typeName == "null" ||
     // Alias types
     typeName == "char" ||
     typeName == "schar" ||
@@ -370,7 +374,9 @@ enum ParserType
   /// The while parser type.
   WHILE,
   /// The do parser type.
-  DO
+  DO,
+  /// The enum parser type.
+  ENUM
 }
 
 /// Hash map of parser types.
@@ -433,6 +439,8 @@ static this()
   parserTypes[Keyword.DO] = ParserType.DO;
 
   parserTypes[Keyword.RETURN] = ParserType.RETURN;
+  
+  parserTypes[Keyword.ENUM] = ParserType.ENUM;
 }
 
 /**

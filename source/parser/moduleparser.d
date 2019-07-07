@@ -20,6 +20,7 @@ import parser.functionparser;
 import parser.attributeparser;
 import parser.variableparser;
 import parser.aliasparser;
+import parser.enumparser;
 
 /// A module object.
 class ModuleObject
@@ -38,6 +39,8 @@ class ModuleObject
   Variable[] variables;
   /// The aliases of the module.
   Alias[] aliases;
+  /// The enums of the module.
+  Enum[] enums;
   /// The line of the module object.
   size_t line;
   /// The source of the module object.
@@ -185,6 +188,15 @@ ModuleObject parseModule(Token moduleToken, string source)
         if (aliasObject)
         {
           moduleObject.aliases ~= aliasObject;
+        }
+        break;
+
+      case ParserType.ENUM:
+        auto enumObject = parseEnum(token, source);
+
+        if (enumObject)
+        {
+          moduleObject.enums ~= enumObject;
         }
         break;
 

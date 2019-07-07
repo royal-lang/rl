@@ -5,21 +5,21 @@ module main;
 
 fn main(string[]:const args)
 {
-  var i = 0;
-
-  while i < 10
+  enum Color
   {
-    writeln(i);
-
-    i++;
+    red = 0;
+    blue = 1;
+    green;
   }
 
-  i = 0;
-
-  do
+  enum Flag : ubyte
   {
-    writeln(i);
+    flag1;
+    flag2 = 4;
+    flag3;
+  }
 
-    i++;
-  } while i < 10;
+  enum A = 200 * 2 + 3 + b;
+  enum B = A * 20;
+  enum C = getC();
 }
