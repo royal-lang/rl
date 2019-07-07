@@ -111,11 +111,11 @@ fn main(string[]:const args)
 
 **-- While Statements**: Done
 
-**-- Enums**: Not Started
+**-- Enums**: Done
 
 **-- Alias**: Done
 
-**-- Properties**: Not Started
+**-- Properties**: In Progress
 
 **-- Structs**: Not Started
 
